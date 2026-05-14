@@ -369,20 +369,9 @@ body {
 #sheet-panel.sp-hidden { width: 0 !important; overflow: hidden; opacity: 0; flex: none; }
 
 /* ── WALKTHROUGH MODE ──
-   When active, all rows in the table other than the focused (AI-flagged) ones are filtered out
-   in renderTable, the tab-bar is hidden, and the surrounding chrome (sheet header,
-   download/save/import controls) is dimmed into the background to focus attention on the
-   highlighted rows. The column-header row stays active so the user can still read column
-   names and trigger header actions. */
-body.walkthrough-active .sp-header {
-  opacity: .35;
-  pointer-events: none;
-  transition: opacity .25s ease;
-}
-body.walkthrough-active .sp-header .sp-close-btn,
-body.walkthrough-active .sp-header .sp-download,
-body.walkthrough-active .sp-header .sp-header-right,
-body.walkthrough-active .sp-header .sp-header-left { opacity: 1; pointer-events: auto; }
+   When active, rows in the table other than the focused (AI-flagged) ones are
+   filtered out in renderTable. The sheet header stays fully interactive so the
+   spreadsheet is never disabled; only cell highlighting changes. */
 body.walkthrough-active .table-editable tbody tr.ai-row td {
   background: #fff !important;
   border-right-color: var(--alp-token-border-weak, #e7e5e4) !important;
@@ -579,6 +568,35 @@ body.walkthrough-active .table-editable tbody tr.duplicate-row:hover td.cell-has
   font-size: 11px; color: #6e6c6b;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   text-align: right;
+}
+/* Review-summary inside Extracted controls "Ready for review" card.
+   Replaces the per-control list with a short list of items to review. */
+.ec-card-summary-list {
+  border-top: 1px solid #efeff3;
+  background: #fff;
+  padding: 4px 0;
+}
+.ec-card-summary-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f3f3f5;
+}
+.ec-card-summary-row:last-child { border-bottom: none; }
+.ec-card-summary-icon {
+  width: 20px; height: 20px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.ec-card-summary-icon--ai { background: #f4e8ff; color: #8e34e3; }
+.ec-card-summary-icon--warn { background: #fff1e0; color: #b86a00; }
+.ec-card-summary-text { min-width: 0; flex: 1; }
+.ec-card-summary-title {
+  font-size: 13px; font-weight: 500; color: var(--text);
+  line-height: 1.35;
+}
+.ec-card-summary-meta {
+  font-size: 12px; color: var(--text-mid);
+  line-height: 1.4; margin-top: 1px;
 }
 .cf-canvas-open-label { font-size: 13px; font-weight: 500; color: #151414; white-space: nowrap; flex-shrink: 0; }
 
@@ -828,9 +846,20 @@ body.mr-edit-active { /* placeholder so we know the mapping page is showing the 
 .focus-card-review:hover { background: #f5f5f7; }
 .focus-card-footer {
   display: flex; align-items: center; justify-content: flex-end;
+  gap: 8px;
   padding: 6px 8px; border-top: 1px solid #efeff3;
   border-radius: inherit;
 }
+.focus-card-footer-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0 8px;
+  font-size: 12px; color: var(--text-mid);
+}
+.focus-card-footer-status::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: #d49b2a; flex-shrink: 0;
+}
+.focus-card-footer-status--ok::before { background: #2a8a4a; }
 .focus-card-rowlist {
   display: flex; flex-direction: column;
   background: #fff;
@@ -841,6 +870,11 @@ body.mr-edit-active { /* placeholder so we know the mapping page is showing the 
 .focus-card-rowlist::-webkit-scrollbar-thumb { background: #dcdbdb; border-radius: 3px; }
 .focus-card-rowlist::-webkit-scrollbar-thumb:hover { background: #b0afae; }
 .focus-card.is-resolved .focus-card-rowlist { background: #fafafa; }
+.focus-card-row.focus-card-row--more {
+  display: flex; align-items: center; justify-content: flex-start;
+  padding: 8px 12px; font-size: 12px; color: var(--text-mid);
+  background: transparent; border-top: 1px solid #f3f3f5;
+}
 .focus-card-row {
   display: grid; align-items: center;
   gap: 10px; padding: 8px 12px;
@@ -2908,7 +2942,7 @@ body.import-ready .table-editable tbody tr.duplicate-row td.cell-has-error {
       <div class="notif-avatar" style="background:#8b5cf6;">VT</div>
       <div class="notif-body">
         <div class="notif-text"><strong>Vlad Van Taroni</strong> commented on <strong>jira test questionnaire</strong></div>
-        <div class="notif-quote">"@<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d2b313c391d2b3c33293c2f3232733e3230">[email&#160;protected]</a> test a quest..."</div>
+        <div class="notif-quote">"@<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d3b212c290d3b2c23392c3f2222632e2220">[email&#160;protected]</a> test a quest..."</div>
       </div>
       <div class="notif-time">44d</div>
     </div>
@@ -2924,7 +2958,7 @@ body.import-ready .table-editable tbody tr.duplicate-row td.cell-has-error {
       <div class="notif-avatar" style="background:#10b981;">AC</div>
       <div class="notif-body">
         <div class="notif-text"><strong>Audrey Collaborator</strong> commented on <strong>Contractor Conduct Expectations</strong></div>
-        <div class="notif-quote">"@<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="80f6ece1e4c0f6e1eef4e1f2efefaee3efed">[email&#160;protected]</a> lasdfafsdf"</div>
+        <div class="notif-quote">"@<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="10667c71745066717e6471627f7f3e737f7d">[email&#160;protected]</a> lasdfafsdf"</div>
       </div>
       <div class="notif-time">70d</div>
     </div>
@@ -3354,7 +3388,7 @@ let walkthroughItemCode = null;       // exact framework code being addressed (e
 let walkthroughItemFramework = null;  // framework key for that code ('soc2'|'iso'|'hipaa'|'nist')
 let walkthroughItemOwner = null;      // exact owner name being addressed
 let openDropdownCol = null;
-let tableEditable = false;
+let tableEditable = true;
 let activeCellDd = null;
 
 // ── OWNER + FRAMEWORK DATA ─────────────────────────────
@@ -3787,6 +3821,11 @@ function renderTable() {
     rows = rows.filter(r => r.name === 'Network Security Monitoring' && (r.row === 11 || r.row === 107 || r.row === 108));
   } else if (walkthroughFocus === 'dup-des') {
     rows = rows.filter(r => r.name === 'Data Encryption Standards' && (r.row === 109 || r.row === 110));
+  } else if (walkthroughFocus === 'dup-all') {
+    rows = rows.filter(r =>
+      (r.name === 'Data Encryption Standards' && (r.row === 109 || r.row === 110)) ||
+      (r.name === 'Network Security Monitoring' && (r.row === 11 || r.row === 107 || r.row === 108))
+    );
   } else if (walkthroughFocus === 'unidentified-owners') {
     const focusRows = rowsToUnidentifiedOwners();
     rows = rows.filter(r => focusRows.has(r.row));
@@ -3805,7 +3844,7 @@ function renderTable() {
   // relevant to the active step (Control ID/Name for duplicates, Owner for
   // unidentified owners, framework-code cells for unfound codes).
   document.body.classList.remove('step-dup', 'step-owner', 'step-code', 'has-step-item');
-  if (walkthroughFocus === 'dup-nsm' || walkthroughFocus === 'dup-des') {
+  if (walkthroughFocus === 'dup-nsm' || walkthroughFocus === 'dup-des' || walkthroughFocus === 'dup-all') {
     document.body.classList.add('step-dup');
   } else if (walkthroughFocus === 'unidentified-owners') {
     document.body.classList.add('step-owner');
@@ -3850,7 +3889,7 @@ function renderTable() {
 
     if (selectedRows.has(r.row)) tr.classList.add('row-selected');
     if ((r.ai || r.aiId) && walkthroughFocus === 'ai') tr.classList.add('ai-row');
-    const inDupStep = walkthroughFocus === 'dup-nsm' || walkthroughFocus === 'dup-des';
+    const inDupStep = walkthroughFocus === 'dup-nsm' || walkthroughFocus === 'dup-des' || walkthroughFocus === 'dup-all';
     if (dupHighlightRows.has(r.row) || inDupStep) tr.classList.add('duplicate-row');
 
     const rowNumTd = document.createElement('td');
@@ -4564,15 +4603,6 @@ async function finalizeAndShowExtractedControls() {
   }
 
   await addMessage(importCardReadyHTML(), 500);
-  await addMessage(`<div class="ai-msg">
-    <p>Here's a summary of what needs your review before import:</p>
-    <ul>
-      <li><strong>AI-generated data</strong> in rows 4, 5, 6, 7, 8, plus IDs in rows 12, 25, 38.</li>
-      <li><strong>4 duplicate controls</strong> — Data Encryption Standards (rows 109–110) and Network Security Monitoring (rows 11, 107–108).</li>
-      <li><strong>2 unidentified owners</strong> — Michael Chen and Lisa Burns are not in Vanta.</li>
-    </ul>
-    <p>You can resolve each below, or open the spreadsheet at any time to edit directly.</p>
-  </div>`, 400);
   const reviewPromptOpts = ['Continue to review AI-generated data', 'Something else'];
   const showReviewPrompt = () => {
     _promptLocked = false;
@@ -5306,6 +5336,9 @@ function updateFilterPill(visibleCount, reviewCount) {
   } else if (walkthroughFocus === 'dup-nsm') {
     text = 'Possible duplicates';
     countText = visibleCount;
+  } else if (walkthroughFocus === 'dup-all') {
+    text = 'Duplicate controls';
+    countText = visibleCount;
   } else if (walkthroughFocus === 'dup-des') {
     text = 'Possible duplicates';
     countText = visibleCount;
@@ -5403,23 +5436,45 @@ function importCardReadyHTML() {
     ? RAW_DATA.filter(r => !removedRows.has(r.row))
     : [];
   const count = activeRows.length || 111;
-  const rowsHtml = activeRows.map(r => {
-    const owner = r.owner ? escapeHtml(r.owner) : '<span style="color:#a1a1aa;">—</span>';
-    return `<div class="ec-card-row">
-      <div class="ec-card-row-id">${escapeHtml(r.id || '')}</div>
-      <div class="ec-card-row-name">${escapeHtml(r.name || '')}</div>
-      <div class="ec-card-row-owner">${owner}</div>
-    </div>`;
-  }).join('');
+  // Review-summary items shown inside the card (replaces the per-control
+  // list with a short list of what needs review before import).
+  const summaryItems = [
+    {
+      tone: 'ai',
+      title: 'AI-generated data',
+      meta: 'rows 4–8 and IDs in rows 12, 25, 38',
+      icon: `<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1.5l.92 2.58L9.5 5l-2.58.92L6 8.5l-.92-2.58L2.5 5l2.58-.92L6 1.5z" fill="currentColor"/><path d="M9.5 7.5l.4 1.1 1.1.4-1.1.4-.4 1.1-.4-1.1-1.1-.4 1.1-.4.4-1.1z" fill="currentColor"/></svg>`,
+    },
+    {
+      tone: 'warn',
+      title: '2 sets of duplicate controls',
+      meta: 'Data Encryption Standards (rows 109–110), Network Security Monitoring (rows 11, 107–108)',
+      icon: `<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L13 12H1L7 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10.2v.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`,
+    },
+    {
+      tone: 'warn',
+      title: '2 unidentified owners',
+      meta: 'Michael Chen and Lisa Burns are not in Vanta',
+      icon: `<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L13 12H1L7 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10.2v.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`,
+    },
+  ];
+  const rowsHtml = summaryItems.map(it => `
+    <div class="ec-card-summary-row">
+      <div class="ec-card-summary-icon ec-card-summary-icon--${it.tone}">${it.icon}</div>
+      <div class="ec-card-summary-text">
+        <div class="ec-card-summary-title">${escapeHtml(it.title)}</div>
+        <div class="ec-card-summary-meta">${escapeHtml(it.meta)}</div>
+      </div>
+    </div>`).join('');
   return `<div class="import-card" id="ec-chat-card">
     <div class="import-card-header">
       <div class="import-card-file-icon">${_listIcon}</div>
       <div class="import-card-info">
         <div class="import-card-title">Extracted controls</div>
-        <div class="import-card-sub">${count} controls</div>
+        <div class="import-card-sub">${count} controls · ${summaryItems.length} items to review</div>
       </div>
     </div>
-    <div class="ec-card-rowlist">${rowsHtml}</div>
+    <div class="ec-card-summary-list">${rowsHtml}</div>
     <div class="import-card-footer">
       <div class="import-card-footer-left">
         <svg width="12" height="12" fill="none" viewBox="0 0 12 12" stroke="#6e6c6b" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg>
@@ -5845,30 +5900,31 @@ function setCfChatCardState(state) {
   if (state === 'ready' || state === 'saved') {
     const label = state === 'saved' ? 'Saved' : 'Ready for review';
     const items = (typeof cfItems !== 'undefined' && cfItems.length) ? cfItems : CF_DEFAULT_DATA;
-    const parents = items.filter(it => it.type === 'parent').length;
+    const parentItems = items.filter(it => it.type === 'parent');
+    const parents = parentItems.length;
     const children = items.filter(it => it.type === 'child').length;
-    const rowsHtml = items.map(it => {
-      const isParent = it.type === 'parent';
-      const indent = isParent ? '0' : '20px';
-      const weight = isParent ? '600' : '400';
-      const codeColor = isParent ? '#151421' : '#6e6c6b';
-      return `<div class="focus-card-row" style="grid-template-columns:70px 1fr;gap:10px;padding:6px 12px 6px calc(12px + ${indent});">
-        <div style="font-size:11px;color:${codeColor};font-weight:${weight};font-variant-numeric:tabular-nums;">${escapeHtml(it.code || '—')}</div>
-        <div style="font-size:12px;color:#151421;font-weight:${weight};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(it.name || '')}</div>
+    const rowsHtml = parentItems.map(it => {
+      return `<div class="focus-card-row" style="grid-template-columns:70px 1fr;gap:10px;padding:6px 12px;">
+        <div style="font-size:11px;color:#151421;font-weight:600;font-variant-numeric:tabular-nums;">${escapeHtml(it.code || '—')}</div>
+        <div style="font-size:12px;color:#151421;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(it.name || '')}</div>
       </div>`;
     }).join('');
     card.classList.remove('import-card');
     card.className = 'focus-card';
+    const statusLabel = state === 'saved' ? 'Saved' : 'Needs review';
+    const statusClass = state === 'saved' ? 'focus-card-footer-status focus-card-footer-status--ok' : 'focus-card-footer-status';
     card.innerHTML = `
       <div class="focus-card-header">
         <div class="focus-card-icon map">${_listIcon}</div>
         <div class="focus-card-title-group">
           <div class="focus-card-title">Custom framework — ISM</div>
-          <div class="focus-card-sub">${parents} categories · ${children} requirements · ${label}</div>
+          <div class="focus-card-sub">${parents} categories · ${children} requirements</div>
         </div>
       </div>
-      <div class="focus-card-rowlist">${rowsHtml}</div>
-      <div class="focus-card-footer"><button class="focus-card-review" onclick="openConfigureFrameworkFromChat()">Review ${_reviewArrowSvg}</button></div>`;
+      <div class="focus-card-footer">
+        <span class="${statusClass}">${statusLabel}</span>
+        <button class="focus-card-review" onclick="openConfigureFrameworkFromChat()">Review ${_reviewArrowSvg}</button>
+      </div>`;
   } else if (state === 'open') {
     card.classList.add('cf-canvas-open');
     card.innerHTML = `
@@ -5898,7 +5954,10 @@ function aiFocusCardHTML(opts = {}) {
   // Surface any row with an AI-generated field. Rows can flag any combination
   // of `ai` (control name) or `aiId` (control ID).
   const rows = RAW_DATA.filter(r => (r.ai || r.aiId) && !removedRows.has(r.row));
-  const rowsHtml = rows.map(r => {
+  const MAX_ROWS = 5;
+  const visibleRows = rows.slice(0, MAX_ROWS);
+  const overflow = Math.max(0, rows.length - MAX_ROWS);
+  const rowsHtml = visibleRows.map(r => {
     const idVal = r.id || '';
     const nameVal = r.name || '';
     const idSparkle = r.aiId
@@ -5914,7 +5973,9 @@ function aiFocusCardHTML(opts = {}) {
         ${nameSparkle}<span class="fc-name-text">${escapeHtml(nameVal)}</span>
       </div>
     </div>`;
-  }).join('');
+  }).join('') + (overflow > 0
+    ? `<div class="focus-card-row focus-card-row--more">+${overflow} more</div>`
+    : '');
   return `<div class="focus-card" id="${id}">
     <div class="focus-card-header">
       <div class="focus-card-icon ai">${_sparkleSvg}</div>
@@ -6149,7 +6210,15 @@ function dupOverviewCardHTML(opts = {}) {
       </div>
     </div>
     <div class="focus-card-rowlist">${setsHtml}</div>
+    <div class="focus-card-footer"><button class="focus-card-review" onclick="reviewAllDuplicatesInCanvas()">Review ${_reviewArrowSvg}</button></div>
   </div>`;
+}
+
+function reviewAllDuplicatesInCanvas() {
+  revealSheetPanel();
+  walkthroughFocus = 'dup-all';
+  dupHighlightRows = new Set([109, 110, 11, 107, 108]);
+  renderTable();
 }
 
 // Walkthrough continuation (after in-card resolutions)
@@ -6166,6 +6235,13 @@ async function continueWalkthroughAfterAi() {
     { id: 'nsm', controlName: 'Network Security Monitoring', rows: [11, 107, 108] },
   ];
   await addMessage(dupOverviewCardHTML({ id: 'dup-overview-card', sets: dupSets }), 200);
+  // Mirror "Review" on the duplicate overview card: if the canvas is open,
+  // update its filter to show all duplicate controls.
+  if (isSheetPanelOpen()) {
+    walkthroughFocus = 'dup-all';
+    dupHighlightRows = new Set([109, 110, 11, 107, 108]);
+    renderTable();
+  }
 
   const dupOverviewOpts = [
     'Walk me through these',
@@ -7427,24 +7503,18 @@ async function startAiWalkthrough() {
     <p>Let's start with the AI-generated data. You can confirm or remove the generated values right here, or open the spreadsheet to edit each one row-by-row.</p>
   </div>`, 100);
   await addMessage(aiFocusCardHTML({ id: 'ai-focus-card' }), 200);
-  const aiStartOpts = ['Walk me through these', 'Confirm all', 'Remove all', 'Something else'];
+  const aiStartOpts = ['Confirm all', 'Remove all', 'Something else'];
   const showAiStartPrompt = () => {
     _promptLocked = false;
     showPrompt('Confirm AI-generated data?', aiStartOpts, async (idx) => {
-      if (idx === 0) {
-        _promptLocked = false; hidePrompt();
-        const aiRows = RAW_DATA.filter(r => (r.ai || r.aiId) && !removedRows.has(r.row));
-        await walkthroughAiItems(aiRows, 0, 'ai-focus-card');
-        return;
-      }
-      if (idx === 3) {
+      if (idx === 2) {
         // "Something else" — show the Go back fallback. Do NOT open canvas.
         showSomethingElseFallback(showAiStartPrompt);
         return;
       }
-      // idx === 1 → Confirm all, idx === 2 → Remove all
+      // idx === 0 → Confirm all, idx === 1 → Remove all
       _promptLocked = false; hidePrompt();
-      resolveAiFromCard('ai-focus-card', idx === 1 ? 'confirm' : 'remove');
+      resolveAiFromCard('ai-focus-card', idx === 0 ? 'confirm' : 'remove');
     });
   };
   showAiStartPrompt();
@@ -7932,14 +8002,12 @@ async function simulateUpload() {
           _promptLocked = false;
           showPrompt(
             'What would you like to do?',
-            ['Save and continue', 'Make edits directly', 'Something else'],
+            ['Save and continue', 'Something else'],
             async (j) => {
               _promptLocked = false; hidePrompt();
               if (j === 0) {
                 cfOpenedFromChat = true;
                 closeConfigureFramework(true);
-              } else if (j === 1) {
-                openConfigureFrameworkFromChat();
               } else {
                 await addMessage(`<div class="ai-msg"><p>Tell me what you'd like to do.</p></div>`, 200);
                 const chatInput = document.getElementById('chat-input');
@@ -8190,6 +8258,122 @@ function confirmImportModal() {
   document.getElementById('import-type-modal').classList.remove('open');
   if (_importModalSelection === 'create') goToImport();
 }
+
+// ── CANVAS-OPEN PROMPT OVERRIDE ───────────────────────
+// When the canvas is open, swap any pending chat prompt for a single
+// "Let me know when you're done reviewing." prompt so the user finishes
+// in the canvas before continuing the chat-driven flow.
+let _pendingRealPrompt = null;
+const _origShowPrompt = showPrompt;
+const _origRevealSheetPanel = revealSheetPanel;
+const _origCollapseSheetPanel = collapseSheetPanel;
+
+function _unresolvedForCurrentStep() {
+  const active = RAW_DATA.filter(r => !removedRows.has(r.row));
+  const dupCount = active.filter(r => r.duplicate && active.some(o => o.row !== r.row && o.duplicate && o.id === r.id)).length;
+  // AI step never blocks — AI values are user-discretion, not "errors".
+  if (walkthroughFocus === 'ai') {
+    return { count: 0, label: '' };
+  }
+  if (walkthroughFocus === 'dup-nsm' || walkthroughFocus === 'dup-des' || walkthroughFocus === 'dup-all') {
+    return { count: dupCount, label: dupCount === 1 ? 'duplicate control' : 'duplicate controls' };
+  }
+  if (walkthroughFocus === 'unidentified-owners') {
+    const n = rowsToUnidentifiedOwners().size;
+    return { count: n, label: n === 1 ? 'unidentified owner' : 'unidentified owners' };
+  }
+  if (walkthroughFocus === 'unfound-codes') {
+    const n = rowsToUnfoundCodes().size;
+    return { count: n, label: n === 1 ? 'unfound framework code' : 'unfound framework codes' };
+  }
+  // Fallback: any unresolved errors/duplicates anywhere (AI excluded)
+  const ownerCount = rowsToUnidentifiedOwners().size;
+  const codeCount = rowsToUnfoundCodes().size;
+  const total = dupCount + ownerCount + codeCount;
+  return { count: total, label: total === 1 ? 'issue' : 'issues' };
+}
+
+function _showCanvasOpenPrompt() {
+  _origShowPrompt(
+    "Let me know when you're done reviewing.",
+    ['Done, continue', 'Something else'],
+    async (idx) => {
+      if (idx === 0) {
+        _promptLocked = false; hidePrompt();
+        // Block advance if there are still unresolved errors/duplicates for
+        // the current step.
+        const u = _unresolvedForCurrentStep();
+        if (u.count > 0) {
+          _origShowPrompt(
+            `You still have <strong>${u.count} ${u.label}</strong> to resolve before importing.`,
+            ['Skip for now', 'Something else'],
+            async (i2) => {
+              _promptLocked = false; hidePrompt();
+              if (i2 === 0) {
+                // Skip — advance the flow anyway.
+                const saved = _pendingRealPrompt;
+                _pendingRealPrompt = null;
+                if (saved && saved.onSelect) await saved.onSelect(0);
+              } else {
+                // "Something else" — restore the canvas-open prompt.
+                _showCanvasOpenPrompt();
+              }
+            }
+          );
+          return;
+        }
+        // Fire the original prompt's first option (typically "continue" /
+        // "confirm") to advance the flow. Keep the canvas open — the user
+        // dismisses it via the X.
+        const saved = _pendingRealPrompt;
+        _pendingRealPrompt = null;
+        if (saved && saved.onSelect) await saved.onSelect(0);
+      } else {
+        // "Something else" — show Go-back fallback directly (bypass the
+        // override so the user actually sees a different prompt while the
+        // canvas remains open).
+        _promptLocked = false; hidePrompt();
+        _origShowPrompt('What would you like to do?', ['Go back'], (i2) => {
+          _promptLocked = false; hidePrompt();
+          if (i2 === 0) _showCanvasOpenPrompt();
+        });
+      }
+    }
+  );
+}
+
+showPrompt = function(question, options, onSelect) {
+  _pendingRealPrompt = { question, options, onSelect };
+  if (isSheetPanelOpen()) {
+    _showCanvasOpenPrompt();
+  } else {
+    _origShowPrompt(question, options, async (idx) => {
+      _pendingRealPrompt = null;
+      if (onSelect) await onSelect(idx);
+    });
+  }
+};
+
+revealSheetPanel = function() {
+  _origRevealSheetPanel();
+  // If a real prompt is currently pending, swap to the canvas-open prompt.
+  if (_pendingRealPrompt) {
+    const cpPrompt = document.getElementById('cp-prompt');
+    if (cpPrompt && cpPrompt.style.display !== 'none') {
+      _showCanvasOpenPrompt();
+    }
+  }
+};
+
+collapseSheetPanel = function() {
+  _origCollapseSheetPanel();
+  // If there's a pending real prompt, restore it now that the canvas is closed.
+  if (_pendingRealPrompt) {
+    const saved = _pendingRealPrompt;
+    _pendingRealPrompt = null;
+    showPrompt(saved.question, saved.options, saved.onSelect);
+  }
+};
 
 // ── INIT ──────────────────────────────────────────────
 renderTable();
