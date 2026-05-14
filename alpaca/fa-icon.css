@@ -1,0 +1,7 @@
+.alpaca-icon-styled-i::before {
+  color: inherit;
+  display: inline-block;
+  text-align: center;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+}

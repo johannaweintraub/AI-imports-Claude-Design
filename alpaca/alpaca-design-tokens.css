@@ -1,0 +1,699 @@
+/*
+ * One-off snapshot of core Alpaca design variables for Claude Design.
+ * Source files at snapshot time:
+ * - packages/alpaca/src/base/tokens/raw-tokens.ts
+ * - packages/alpaca/src/base/tokens/semantic-tokens.tsx
+ * - packages/alpaca/src/private/internal-typography/typography-tokens.css
+ * - apps/web-client/src/global-styles/styled-components-global-style.tsx
+ */
+
+:root {
+  --font-sans-serif-fallbacks:
+    -apple-system, BlinkMacSystemFont, Ubuntu, "Helvetica Neue", sans-serif;
+  --font-serif-fallbacks: Garamond, Merriweather, "Times New Roman", serif;
+  --font-options-inter: "Inter", var(--font-sans-serif-fallbacks);
+  --font-options-monaco: "Monaco", monospace;
+  --font-options-domine: "Domine", var(--font-serif-fallbacks);
+  --font-base: var(--font-options-inter);
+  --font-display: var(--font-options-domine);
+  --font-code: var(--font-options-monaco);
+}
+
+html {
+  font-size: 100%;
+  font-size: clamp(12px, 100%, 20px);
+}
+
+body {
+  color: var(--alp-token-text-default);
+  font-family: var(--font-base) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body *[data-font-display] {
+  font-family: var(--font-display);
+}
+
+*[data-sr-only] {
+  pointer-events: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+*[data-truncate="true"],
+*[data-truncate="1"] {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+*[data-truncate="2"] {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+*[data-truncate="3"] {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+*[data-radix-popper-content-wrapper],
+*[id^="legacy-fui-portal-root"],
+*.bp4-portal {
+  z-index: 100 !important;
+}
+
+*.bp4-portal > * {
+  z-index: unset !important;
+}
+
+*[data-modal-v2-overlay],
+*[data-modal-v2-content] {
+  z-index: 100 !important;
+}
+
+*[id^="legacy-fui-portal-root"],
+#fui-portal-toast-only-root {
+  position: fixed;
+  width: 100%;
+}
+
+#fui-portal-toast-only-root {
+  z-index: 101;
+}
+
+:root {
+  --global-focus-focus-outline-color: var(--alp-token-focus-default);
+  --global-focus-focus-outline-width: 2px;
+  --global-focus-focus-outline-offset: -2px;
+  --global-focus-focus-outline-style: solid;
+}
+
+*:focus-visible,
+*[data-focus-within="true"]:focus-within:has(*:focus-visible) {
+  outline: var(--global-focus-focus-outline-width)
+    var(--global-focus-focus-outline-style)
+    var(--global-focus-focus-outline-color);
+  outline-offset: var(--global-focus-focus-outline-offset);
+}
+
+:root {
+  --alp-token-letterSpacing-default: 0.01em;
+  --alp-token-fontWeight-regular: 400;
+  --alp-token-fontWeight-medium: 500;
+  --alp-token-fontWeight-semiBold: 600;
+}
+
+/* New font tokens */
+:root {
+  --alp-token-fontSize-headingL: 1.5rem; /* 24 */
+  --alp-token-fontSize-headingM: 1.25rem; /* 20 */
+  --alp-token-fontSize-headingS: 1.125rem; /* 18 */
+  --alp-token-fontSize-bodyL: 1rem; /* 16 */
+  --alp-token-fontSize-bodyM: 0.875rem; /* 14 */
+  --alp-token-fontSize-bodyS: 0.75rem; /* 12 */
+
+  --alp-token-lineHeight-headingL: 1.16666667; /* 28 / 24 */
+  --alp-token-lineHeight-headingM: 1.2; /* 24 / 20 */
+  --alp-token-lineHeight-headingS: 1.22222222; /* 22 / 18 */
+  --alp-token-lineHeight-bodyL: 1.5; /* 24 / 16 */
+  --alp-token-lineHeight-bodyM: 1.57142857; /* 22 / 14 */
+  --alp-token-lineHeight-bodyS: 1.66666667; /* 20 / 12 */
+
+  /* Internal-only font tokens */
+  --alp-token-fontSize-internal-labelL: 1rem;
+  --alp-token-fontSize-internal-labelM: 0.875rem; /* 14px */
+  --alp-token-fontSize-internal-labelS: 0.75rem; /* 12px */
+  --alp-token-fontSize-internal-helperM: 0.875rem; /* 14px */
+  --alp-token-fontSize-internal-helperS: 0.75rem; /* 12px */
+  --alp-token-fontSize-internal-code: 0.875rem; /* 14px */
+  --alp-token-fontSize-internal-tableNumbers: 0.75rem; /* 12px */
+  --alp-token-fontSize-internal-smallCaps: 0.75rem; /* 12px */
+
+  --alp-token-lineHeight-internal-labelL: 1.5;
+  --alp-token-lineHeight-internal-labelM: 1.42857143;
+  --alp-token-lineHeight-internal-labelS: 1.33333333;
+  --alp-token-lineHeight-internal-helperM: 1.42857143;
+  --alp-token-lineHeight-internal-helperS: 1.33333333;
+  --alp-token-lineHeight-internal-code: 1.14285714;
+  --alp-token-lineHeight-internal-tableNumbers: 1.42857143;
+  --alp-token-lineHeight-internal-smallCaps: 1.33333333;
+}
+
+:root {
+  --alp-token-sand-100: #faf8f8;
+  --alp-token-sand-200: #f2efef;
+  --alp-token-sand-300: #ebe8e8;
+  --alp-token-sand-400: #dcdbdb;
+  --alp-token-sand-500: #c9c8c7;
+  --alp-token-sand-600: #bab8b8;
+  --alp-token-sand-700: #a6a4a4;
+  --alp-token-sand-800: #8a8888;
+  --alp-token-sand-900: #6e6c6b;
+  --alp-token-sand-1000: #545352;
+  --alp-token-sand-1100: #424141;
+  --alp-token-sand-1200: #333232;
+  --alp-token-sand-1300: #242323;
+  --alp-token-sand-1400: #151414;
+  --alp-token-white: #ffffff;
+  --alp-token-purple-100: #f7f0fe;
+  --alp-token-purple-200: #f1e3ff;
+  --alp-token-purple-300: #ebd6ff;
+  --alp-token-purple-400: #dfbfff;
+  --alp-token-purple-500: #d5aaff;
+  --alp-token-purple-600: #c98fff;
+  --alp-token-purple-700: #bc77fc;
+  --alp-token-purple-800: #a555f2;
+  --alp-token-purple-900: #8e34e3;
+  --alp-token-purple-1000: #771fcb;
+  --alp-token-purple-1100: #5a1799;
+  --alp-token-purple-1200: #3f1369;
+  --alp-token-purple-1300: #280d42;
+  --alp-token-purple-1400: #1d0b2e;
+  --alp-token-green-100: #f2faf4;
+  --alp-token-green-200: #e9f5ec;
+  --alp-token-green-300: #dcf2e2;
+  --alp-token-green-400: #c2edcd;
+  --alp-token-green-500: #98e3ab;
+  --alp-token-green-600: #70d48b;
+  --alp-token-green-700: #53bd6f;
+  --alp-token-green-800: #1f9c3a;
+  --alp-token-green-900: #098228;
+  --alp-token-green-1000: #047023;
+  --alp-token-green-1100: #01591d;
+  --alp-token-green-1200: #004215;
+  --alp-token-green-1300: #002b0e;
+  --alp-token-green-1400: #001c09;
+  --alp-token-orange-100: #fcf8f2;
+  --alp-token-orange-200: #faf0e3;
+  --alp-token-orange-300: #fae9d2;
+  --alp-token-orange-400: #f7d5ab;
+  --alp-token-orange-500: #f7bc6f;
+  --alp-token-orange-600: #f2a23f;
+  --alp-token-orange-700: #ef8909;
+  --alp-token-orange-800: #d66800;
+  --alp-token-orange-900: #b85407;
+  --alp-token-orange-1000: #a34a00;
+  --alp-token-orange-1100: #7a3802;
+  --alp-token-orange-1200: #572801;
+  --alp-token-orange-1300: #3b1b01;
+  --alp-token-orange-1400: #1c0c01;
+  --alp-token-red-100: #fef5f5;
+  --alp-token-red-200: #fcebeb;
+  --alp-token-red-300: #fcdede;
+  --alp-token-red-400: #fac8c8;
+  --alp-token-red-500: #f9a7a7;
+  --alp-token-red-600: #f78888;
+  --alp-token-red-700: #f06c6c;
+  --alp-token-red-800: #e05151;
+  --alp-token-red-900: #c93c46;
+  --alp-token-red-1000: #b22d3f;
+  --alp-token-red-1100: #852532;
+  --alp-token-red-1200: #611822;
+  --alp-token-red-1300: #400b12;
+  --alp-token-red-1400: #1f0509;
+  --alp-token-magenta-100: #fff5fe;
+  --alp-token-magenta-200: #ffebfe;
+  --alp-token-magenta-300: #ffe0fc;
+  --alp-token-magenta-400: #fccaf8;
+  --alp-token-magenta-500: #fcb1f6;
+  --alp-token-magenta-600: #fa93f1;
+  --alp-token-magenta-700: #ed72e3;
+  --alp-token-magenta-800: #d44ec9;
+  --alp-token-magenta-900: #b236a8;
+  --alp-token-magenta-1000: #962a8d;
+  --alp-token-magenta-1100: #7a1572;
+  --alp-token-magenta-1200: #5e0757;
+  --alp-token-magenta-1300: #40053b;
+  --alp-token-magenta-1400: #21031f;
+  --alp-token-blue-100: #f2f8ff;
+  --alp-token-blue-200: #eaf3fe;
+  --alp-token-blue-300: #d8eafe;
+  --alp-token-blue-400: #bcdafe;
+  --alp-token-blue-500: #91c3fe;
+  --alp-token-blue-600: #6daffe;
+  --alp-token-blue-700: #499bfd;
+  --alp-token-blue-800: #2984f0;
+  --alp-token-blue-900: #0d6ee0;
+  --alp-token-blue-1000: #0d5bba;
+  --alp-token-blue-1100: #09468f;
+  --alp-token-blue-1200: #03346e;
+  --alp-token-blue-1300: #001e42;
+  --alp-token-blue-1400: #01162e;
+  --alp-token-cyan-100: #f2fbfc;
+  --alp-token-cyan-200: #e6f7fa;
+  --alp-token-cyan-300: #d5f3f7;
+  --alp-token-cyan-400: #b3eaf2;
+  --alp-token-cyan-500: #95dde8;
+  --alp-token-cyan-600: #60cbdb;
+  --alp-token-cyan-700: #32b5c9;
+  --alp-token-cyan-800: #0496b0;
+  --alp-token-cyan-900: #007b96;
+  --alp-token-cyan-1000: #016a82;
+  --alp-token-cyan-1100: #115869;
+  --alp-token-cyan-1200: #14424d;
+  --alp-token-cyan-1300: #0d2c33;
+  --alp-token-cyan-1400: #05181c;
+  --alp-token-yellow-100: #fffbf0;
+  --alp-token-yellow-200: #fff7e3;
+  --alp-token-yellow-300: #fff2cc;
+  --alp-token-yellow-400: #ffe49c;
+  --alp-token-yellow-500: #fad164;
+  --alp-token-yellow-600: #ffbe0f;
+  --alp-token-yellow-700: #f2a516;
+  --alp-token-yellow-800: #c77b00;
+  --alp-token-yellow-900: #a16300;
+  --alp-token-yellow-1000: #804d00;
+  --alp-token-yellow-1100: #69430f;
+  --alp-token-yellow-1200: #47300c;
+  --alp-token-yellow-1300: #302413;
+  --alp-token-yellow-1400: #171009;
+  --alp-token-brown-100: #f8f4f3;
+  --alp-token-brown-200: #f7ece6;
+  --alp-token-brown-300: #f2e1d8;
+  --alp-token-brown-400: #edd0c0;
+  --alp-token-brown-500: #e3baa3;
+  --alp-token-brown-600: #d9a789;
+  --alp-token-brown-700: #c9956f;
+  --alp-token-brown-800: #a87754;
+  --alp-token-brown-900: #8f6447;
+  --alp-token-brown-1000: #6b4b34;
+  --alp-token-brown-1100: #593f2c;
+  --alp-token-brown-1200: #3d2c1d;
+  --alp-token-brown-1300: #2b1d11;
+  --alp-token-brown-1400: #0f0b06;
+  --alp-token-backdrop: #292f3333;
+  --alp-token-border-radius-xs: 2px;
+  --alp-token-border-radius-sm: 4px;
+  --alp-token-border-radius-md: 6px;
+  --alp-token-border-radius-lg: 8px;
+  --alp-token-border-radius-xl: 12px;
+  --alp-token-border-radius-none: 0;
+  --alp-token-border-radius-round: 999px;
+  --alp-token-gray-100a: rgba(110, 108, 107, 0.07);
+  --alp-token-gray-200a: rgba(110, 108, 107, 0.14);
+  --alp-token-gray-300a: rgba(110, 108, 107, 0.21);
+  --alp-token-gray-400a: rgba(110, 108, 107, 0.28);
+  --alp-token-gray-500a: rgba(110, 108, 107, 0.35);
+  --alp-token-gray-600a: rgba(110, 108, 107, 0.42);
+  --alp-token-gray-700a: rgba(110, 108, 107, 0.49);
+  --alp-token-gray-800a: rgba(110, 108, 107, 0.56);
+  --alp-token-gray-900a: rgba(110, 108, 107, 0.63);
+  --alp-token-gray-1000a: rgba(110, 108, 107, 0.7);
+  --alp-token-gray-1100a: rgba(110, 108, 107, 0.77);
+  --alp-token-gray-1200a: rgba(110, 108, 107, 0.84);
+  --alp-token-gray-1300a: rgba(110, 108, 107, 0.91);
+  --alp-token-white-100a: rgba(255, 255, 255, 0.07);
+  --alp-token-white-200a: rgba(255, 255, 255, 0.14);
+  --alp-token-white-300a: rgba(255, 255, 255, 0.21);
+  --alp-token-white-400a: rgba(255, 255, 255, 0.28);
+  --alp-token-white-500a: rgba(255, 255, 255, 0.35);
+  --alp-token-white-600a: rgba(255, 255, 255, 0.42);
+  --alp-token-white-700a: rgba(255, 255, 255, 0.49);
+  --alp-token-white-800a: rgba(255, 255, 255, 0.56);
+  --alp-token-white-900a: rgba(255, 255, 255, 0.63);
+  --alp-token-white-1000a: rgba(255, 255, 255, 0.7);
+  --alp-token-white-1100a: rgba(255, 255, 255, 0.77);
+  --alp-token-white-1200a: rgba(255, 255, 255, 0.84);
+  --alp-token-white-1300a: rgba(255, 255, 255, 0.91);
+  --alp-token-purple-100a: rgba(172, 85, 255, 0.07);
+  --alp-token-purple-200a: rgba(172, 85, 255, 0.14);
+  --alp-token-purple-300a: rgba(172, 85, 255, 0.21);
+  --alp-token-purple-400a: rgba(172, 85, 255, 0.28);
+  --alp-token-purple-500a: rgba(172, 85, 255, 0.35);
+  --alp-token-purple-600a: rgba(172, 85, 255, 0.42);
+  --alp-token-purple-700a: rgba(172, 85, 255, 0.49);
+  --alp-token-purple-800a: rgba(172, 85, 255, 0.56);
+  --alp-token-purple-900a: rgba(172, 85, 255, 0.63);
+  --alp-token-purple-1000a: rgba(172, 85, 255, 0.7);
+  --alp-token-purple-1100a: rgba(172, 85, 255, 0.77);
+  --alp-token-purple-1200a: rgba(172, 85, 255, 0.84);
+  --alp-token-purple-1300a: rgba(172, 85, 255, 0.91);
+  --alp-token-red-100a: rgba(244, 91, 91, 0.07);
+  --alp-token-red-200a: rgba(244, 91, 91, 0.14);
+  --alp-token-red-300a: rgba(244, 91, 91, 0.21);
+  --alp-token-red-400a: rgba(244, 91, 91, 0.28);
+  --alp-token-red-500a: rgba(244, 91, 91, 0.35);
+  --alp-token-red-600a: rgba(244, 91, 91, 0.42);
+  --alp-token-red-700a: rgba(244, 91, 91, 0.49);
+  --alp-token-red-800a: rgba(244, 91, 91, 0.56);
+  --alp-token-red-900a: rgba(244, 91, 91, 0.63);
+  --alp-token-red-1000a: rgba(244, 91, 91, 0.7);
+  --alp-token-red-1100a: rgba(244, 91, 91, 0.77);
+  --alp-token-red-1200a: rgba(244, 91, 91, 0.84);
+  --alp-token-red-1300a: rgba(244, 91, 91, 0.91);
+  --alp-token-bg-inset-onLight: rgba(110, 108, 107, 0.055);
+  --alp-token-bg-inset-onDark: rgba(110, 108, 107, 0.15);
+  --alp-token-bg-surface-curtain-onLight: #292f3333;
+  --alp-token-bg-surface-curtain-onDark: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--alp-token-gray-1100) 40%, transparent 60%),
+    color-mix(in srgb, var(--alp-token-gray-1200) 100%, transparent 0%)
+  );
+  --alp-token-shadow-card-onLight: 0px 1px 4px 0px rgba(51, 51, 51, 0.08);
+  --alp-token-shadow-card-onDark: 0px 1px 4px 0px rgba(0, 0, 0, 0.2);
+  --alp-token-shadow-card-hover-onLight: 0px 1px 4px 0px rgba(51, 51, 51, 0.08);
+  --alp-token-shadow-card-hover-onDark: 0px 1px 4px 0px rgba(0, 0, 0, 0.2);
+  --alp-token-shadow-drawer-onLight:
+    0px 0px 0px 1px rgba(0, 0, 0, 0.03),
+    0px 0px 16px 0px rgba(16, 22, 26, 0.04),
+    0px 0px 64px 0px rgba(16, 22, 26, 0.16);
+  --alp-token-shadow-drawer-onDark: 0px 25px 50px -12px rgba(0, 0, 0, 0.6);
+  --alp-token-shadow-menu-onLight: 0px 0px 24px 0px
+    color-mix(in srgb, var(--alp-token-gray-1000) 12%, transparent 88%);
+  --alp-token-shadow-menu-onDark: 0px 0px 36px 1px
+    color-mix(in srgb, var(--alp-token-gray-1200) 55%, transparent 45%);
+  --alp-token-shadow-modal-onLight:
+    0px 0px 0px 1px rgba(0, 0, 0, 0.02), 0px 0px 8px 0px rgba(16, 22, 26, 0.02),
+    0px 0px 24px 0px rgba(16, 22, 26, 0.18);
+  --alp-token-shadow-modal-onDark:
+    0px 0px 0 1px
+      color-mix(in srgb, var(--alp-token-gray-1000) 75%, transparent 25%),
+    0 0 24px 0px
+      color-mix(in srgb, var(--alp-token-gray-1200) 55%, transparent 45%),
+    inset 0 0 6px -2px var(--alp-token-gray-900);
+  --alp-token-shadow-tooltip-onLight: 0px 4px 4px 0px
+    color-mix(in srgb, var(--alp-token-gray-1000) 25%, transparent 75%);
+  --alp-token-shadow-tooltip-onDark: 0px 4px 4px 0px
+    color-mix(in srgb, var(--alp-token-gray-1200) 55%, transparent 45%);
+  --alp-token-shadow-button-hover-onLight: 0px 2px 6px 0px
+    rgba(51, 51, 51, 0.12);
+  --alp-token-shadow-button-hover-onDark: 0px 2px 6px 0px rgba(51, 51, 51, 0.12);
+  --alp-token-shadow-sidebar-onLight: -4px 0px 32px 0px rgba(51, 51, 51, 0.06);
+  --alp-token-shadow-sidebar-onDark: -4px 0px 32px 0px rgba(51, 51, 51, 0.06);
+  --alp-token-shadow-border-spread-onLight: 0px 0px 0px 3px
+    rgba(120, 90, 250, 0.12);
+  --alp-token-shadow-border-spread-onDark: 0px 0px 0px 3px
+    rgba(120, 90, 250, 0.12);
+  --alp-token-gradient-weak-onLight: linear-gradient(
+    90deg,
+    var(--alp-token-sand-300),
+    var(--alp-token-sand-100)
+  );
+  --alp-token-gradient-primary-weak-onLight: linear-gradient(
+    90deg,
+    var(--alp-token-purple-400),
+    var(--alp-token-purple-100)
+  );
+  --alp-token-gradient-primary-onLight: linear-gradient(
+    90deg,
+    var(--alp-token-purple-1000),
+    var(--alp-token-purple-800)
+  );
+  --alp-token-gradient-primary-strong-onLight: linear-gradient(
+    90deg,
+    var(--alp-token-purple-1300),
+    var(--alp-token-purple-900)
+  );
+  --alp-token-gradient-success-onLight: linear-gradient(
+    90deg,
+    var(--alp-token-green-1000),
+    var(--alp-token-green-800)
+  );
+  --alp-token-gradient-weak-onDark: linear-gradient(
+    90deg,
+    var(--alp-token-gray-1000),
+    var(--alp-token-gray-1200)
+  );
+  --alp-token-gradient-primary-weak-onDark: linear-gradient(
+    90deg,
+    var(--alp-token-purple-1200),
+    var(--alp-token-purple-1400)
+  );
+  --alp-token-gradient-primary-onDark: linear-gradient(
+    90deg,
+    var(--alp-token-purple-500),
+    var(--alp-token-purple-800)
+  );
+  --alp-token-gradient-primary-strong-onDark: linear-gradient(
+    90deg,
+    var(--alp-token-purple-400),
+    var(--alp-token-purple-600)
+  );
+  --alp-token-gradient-success-onDark: linear-gradient(
+    90deg,
+    var(--alp-token-green-500),
+    var(--alp-token-green-800)
+  );
+  --alp-token-brand-purple-onLight: #240642;
+  --alp-token-brand-purple-onDark: #d6b4f8;
+  --alp-token-gray-100: var(--alp-token-sand-100);
+  --alp-token-gray-200: var(--alp-token-sand-200);
+  --alp-token-gray-300: var(--alp-token-sand-300);
+  --alp-token-gray-400: var(--alp-token-sand-400);
+  --alp-token-gray-500: var(--alp-token-sand-500);
+  --alp-token-gray-600: var(--alp-token-sand-600);
+  --alp-token-gray-700: var(--alp-token-sand-700);
+  --alp-token-gray-800: var(--alp-token-sand-800);
+  --alp-token-gray-900: var(--alp-token-sand-900);
+  --alp-token-gray-1000: var(--alp-token-sand-1000);
+  --alp-token-gray-1100: var(--alp-token-sand-1100);
+  --alp-token-gray-1200: var(--alp-token-sand-1200);
+  --alp-token-gray-1300: var(--alp-token-sand-1300);
+  --alp-token-gray-1400: var(--alp-token-sand-1400);
+  --alp-token-brand-vantaPurple: var(--alp-token-brand-purple-onLight);
+  --alp-token-text-default: var(--alp-token-gray-1400);
+  --alp-token-text-secondary: var(--alp-token-gray-1000);
+  --alp-token-text-experimentalTertiary: var(--alp-token-gray-900);
+  --alp-token-text-placeholder: var(--alp-token-gray-1100a);
+  --alp-token-text-disabled: var(--alp-token-gray-800a);
+  --alp-token-text-onColor: var(--alp-token-white);
+  --alp-token-text-primary: var(--alp-token-purple-1000);
+  --alp-token-text-success: var(--alp-token-green-1000);
+  --alp-token-text-warning: var(--alp-token-orange-900);
+  --alp-token-text-danger: var(--alp-token-red-1000);
+  --alp-token-text-accentMagenta: var(--alp-token-magenta-900);
+  --alp-token-text-accentBlue: var(--alp-token-blue-1000);
+  --alp-token-text-accentCyan: var(--alp-token-cyan-1000);
+  --alp-token-text-accentYellow: var(--alp-token-yellow-900);
+  --alp-token-text-accentBrown: var(--alp-token-brown-900);
+  --alp-token-link-default: var(--alp-token-purple-900);
+  --alp-token-link-hover: var(--alp-token-purple-1000);
+  --alp-token-link-visited: var(--alp-token-purple-1000);
+  --alp-token-link-neutral: var(--alp-token-gray-1000);
+  --alp-token-link-neutralOnColor: var(--alp-token-gray-300);
+  --alp-token-link-neutralOnColorHover: var(--alp-token-gray-200);
+  --alp-token-link-neutralHover: var(--alp-token-gray-1100);
+  --alp-token-link-neutralVisited: var(--alp-token-gray-1100);
+  --alp-token-link-onColor: var(--alp-token-purple-300);
+  --alp-token-link-onColorHover: var(--alp-token-purple-200);
+  --alp-token-link-unstyled: var(--alp-token-gray-1400);
+  --alp-token-link-disabled: var(--alp-token-gray-800a);
+  --alp-token-icon-default: var(--alp-token-gray-1400);
+  --alp-token-icon-secondary: var(--alp-token-gray-900);
+  --alp-token-icon-weak: var(--alp-token-gray-800);
+  --alp-token-icon-disabled: var(--alp-token-gray-600a);
+  --alp-token-icon-onColor: var(--alp-token-white);
+  --alp-token-icon-primary: var(--alp-token-purple-800);
+  --alp-token-icon-success: var(--alp-token-green-800);
+  --alp-token-icon-warning: var(--alp-token-orange-800);
+  --alp-token-icon-danger: var(--alp-token-red-800);
+  --alp-token-icon-accentMagenta: var(--alp-token-magenta-800);
+  --alp-token-icon-accentBlue: var(--alp-token-blue-800);
+  --alp-token-icon-accentCyan: var(--alp-token-cyan-800);
+  --alp-token-icon-accentYellow: var(--alp-token-yellow-800);
+  --alp-token-icon-accentBrown: var(--alp-token-brown-800);
+  --alp-token-bg-default: var(--alp-token-white);
+  --alp-token-bg-defaultHover: var(--alp-token-gray-100);
+  --alp-token-bg-disabled: var(--alp-token-gray-100a);
+  --alp-token-bg-opacityHover: var(--alp-token-gray-100a);
+  --alp-token-bg-opacityActive: var(--alp-token-gray-200a);
+  --alp-token-bg-track: var(--alp-token-gray-400);
+  --alp-token-bg-inverted: var(--alp-token-gray-1400);
+  --alp-token-bg-invertedHover: var(--alp-token-gray-1200);
+  --alp-token-bg-invertedRaised: var(--alp-token-gray-1200);
+  --alp-token-bg-invertedRaisedHover: var(--alp-token-gray-1100);
+  --alp-token-bg-neutral: var(--alp-token-gray-900);
+  --alp-token-bg-neutralSubtle: var(--alp-token-gray-300);
+  --alp-token-bg-neutralSubtleHover: var(--alp-token-gray-400);
+  --alp-token-bg-neutralWeak: var(--alp-token-gray-100);
+  --alp-token-bg-neutralWeakHover: var(--alp-token-gray-200);
+  --alp-token-bg-primary: var(--alp-token-purple-900);
+  --alp-token-bg-primaryHover: var(--alp-token-purple-1000);
+  --alp-token-bg-primaryActive: var(--alp-token-purple-1100);
+  --alp-token-bg-primaryOpacityHover: var(--alp-token-purple-100a);
+  --alp-token-bg-primaryOpacityActive: var(--alp-token-purple-200a);
+  --alp-token-bg-primarySubtle: var(--alp-token-purple-300);
+  --alp-token-bg-primarySubtleHover: var(--alp-token-purple-400);
+  --alp-token-bg-primaryWeak: var(--alp-token-purple-100);
+  --alp-token-bg-success: var(--alp-token-green-900);
+  --alp-token-bg-successHover: var(--alp-token-green-1000);
+  --alp-token-bg-successSubtle: var(--alp-token-green-300);
+  --alp-token-bg-successSubtleHover: var(--alp-token-green-400);
+  --alp-token-bg-successWeak: var(--alp-token-green-100);
+  --alp-token-bg-successWeakHover: var(--alp-token-green-200);
+  --alp-token-bg-warning: var(--alp-token-orange-900);
+  --alp-token-bg-warningHover: var(--alp-token-orange-1000);
+  --alp-token-bg-warningSubtle: var(--alp-token-orange-300);
+  --alp-token-bg-warningSubtleHover: var(--alp-token-orange-400);
+  --alp-token-bg-warningWeak: var(--alp-token-orange-100);
+  --alp-token-bg-warningWeakHover: var(--alp-token-orange-200);
+  --alp-token-bg-danger: var(--alp-token-red-900);
+  --alp-token-bg-dangerHover: var(--alp-token-red-1000);
+  --alp-token-bg-dangerActive: var(--alp-token-red-1100);
+  --alp-token-bg-dangerOpacityHover: var(--alp-token-red-100a);
+  --alp-token-bg-dangerOpacityActive: var(--alp-token-red-200a);
+  --alp-token-bg-dangerSubtle: var(--alp-token-red-300);
+  --alp-token-bg-dangerSubtleHover: var(--alp-token-red-400);
+  --alp-token-bg-dangerWeak: var(--alp-token-red-100);
+  --alp-token-bg-dangerWeakHover: var(--alp-token-red-200);
+  --alp-token-bg-accentMagenta: var(--alp-token-magenta-900);
+  --alp-token-bg-accentMagentaSubtle: var(--alp-token-magenta-300);
+  --alp-token-bg-accentMagentaWeak: var(--alp-token-magenta-100);
+  --alp-token-bg-accentBlue: var(--alp-token-blue-900);
+  --alp-token-bg-accentBlueSubtle: var(--alp-token-blue-300);
+  --alp-token-bg-accentBlueSubtleHover: var(--alp-token-blue-400);
+  --alp-token-bg-accentBlueWeak: var(--alp-token-blue-100);
+  --alp-token-bg-accentBlueWeakHover: var(--alp-token-blue-200);
+  --alp-token-bg-accentCyan: var(--alp-token-cyan-900);
+  --alp-token-bg-accentCyanSubtle: var(--alp-token-cyan-300);
+  --alp-token-bg-accentCyanWeak: var(--alp-token-cyan-100);
+  --alp-token-bg-accentYellow: var(--alp-token-yellow-700);
+  --alp-token-bg-accentYellowSubtle: var(--alp-token-yellow-300);
+  --alp-token-bg-accentYellowWeak: var(--alp-token-yellow-100);
+  --alp-token-bg-accentBrown: var(--alp-token-brown-900);
+  --alp-token-bg-accentBrownSubtle: var(--alp-token-brown-300);
+  --alp-token-bg-accentBrownWeak: var(--alp-token-brown-100);
+  --alp-token-bg-experimental__inset: var(--alp-token-bg-inset-onLight);
+  --alp-token-bg-surface-curtain: var(--alp-token-bg-surface-curtain-onLight);
+  --alp-token-border-default: var(--alp-token-gray-500);
+  --alp-token-border-defaultHover: var(--alp-token-gray-700);
+  --alp-token-border-disabled: var(--alp-token-gray-300a);
+  --alp-token-border-weak: var(--alp-token-gray-400);
+  --alp-token-border-strong: var(--alp-token-gray-900);
+  --alp-token-border-strongHover: var(--alp-token-gray-1000);
+  --alp-token-border-primary: var(--alp-token-purple-900);
+  --alp-token-border-primaryHover: var(--alp-token-purple-1000);
+  --alp-token-border-primaryWeak: var(--alp-token-purple-500);
+  --alp-token-border-primarySubtleHover: var(--alp-token-purple-600);
+  --alp-token-border-success: var(--alp-token-green-900);
+  --alp-token-border-successHover: var(--alp-token-green-1000);
+  --alp-token-border-successWeak: var(--alp-token-green-500);
+  --alp-token-border-successWeakHover: var(--alp-token-green-600);
+  --alp-token-border-warning: var(--alp-token-orange-900);
+  --alp-token-border-warningHover: var(--alp-token-orange-1000);
+  --alp-token-border-warningWeak: var(--alp-token-orange-500);
+  --alp-token-border-warningWeakHover: var(--alp-token-orange-600);
+  --alp-token-border-danger: var(--alp-token-red-900);
+  --alp-token-border-dangerHover: var(--alp-token-red-1000);
+  --alp-token-border-dangerWeak: var(--alp-token-red-500);
+  --alp-token-border-dangerWeakHover: var(--alp-token-red-600);
+  --alp-token-border-accentMagenta: var(--alp-token-magenta-900);
+  --alp-token-border-accentMagentaWeak: var(--alp-token-magenta-500);
+  --alp-token-border-accentBlue: var(--alp-token-blue-900);
+  --alp-token-border-accentBlueWeak: var(--alp-token-blue-500);
+  --alp-token-border-accentCyan: var(--alp-token-cyan-900);
+  --alp-token-border-accentCyanWeak: var(--alp-token-cyan-500);
+  --alp-token-border-accentYellow: var(--alp-token-yellow-700);
+  --alp-token-border-accentYellowWeak: var(--alp-token-yellow-500);
+  --alp-token-border-accentBrown: var(--alp-token-brown-900);
+  --alp-token-border-accentBrownWeak: var(--alp-token-brown-500);
+  --alp-token-dataViz-default: var(--alp-token-gray-800);
+  --alp-token-dataViz-weak: var(--alp-token-gray-400);
+  --alp-token-dataViz-primary: var(--alp-token-purple-800);
+  --alp-token-dataViz-primaryWeak: var(--alp-token-purple-400);
+  --alp-token-dataViz-success: var(--alp-token-green-700);
+  --alp-token-dataViz-successWeak: var(--alp-token-green-400);
+  --alp-token-dataViz-warning: var(--alp-token-orange-700);
+  --alp-token-dataViz-warningWeak: var(--alp-token-orange-400);
+  --alp-token-dataViz-danger: var(--alp-token-red-700);
+  --alp-token-dataViz-dangerWeak: var(--alp-token-red-400);
+  --alp-token-dataViz-info: var(--alp-token-blue-800);
+  --alp-token-dataViz-infoWeak: var(--alp-token-blue-400);
+  --alp-token-dataViz-riskCritical: var(--alp-token-red-1000);
+  --alp-token-dataViz-riskHighest: var(--alp-token-red-900);
+  --alp-token-dataViz-riskHigh: var(--alp-token-red-700);
+  --alp-token-dataViz-riskMedium: var(--alp-token-yellow-600);
+  --alp-token-dataViz-riskLow: var(--alp-token-green-700);
+  --alp-token-dataViz-riskLowest: var(--alp-token-green-900);
+  --alp-token-dataViz-riskNone: var(--alp-token-gray-400);
+  --alp-token-dataViz-severityCritical: var(--alp-token-red-1000);
+  --alp-token-dataViz-severityHighest: var(--alp-token-red-900);
+  --alp-token-dataViz-severityHigh: var(--alp-token-red-700);
+  --alp-token-dataViz-severityMedium: var(--alp-token-yellow-600);
+  --alp-token-dataViz-severityLow: var(--alp-token-green-700);
+  --alp-token-dataViz-severityLowest: var(--alp-token-green-900);
+  --alp-token-dataViz-severityNone: var(--alp-token-gray-400);
+  --alp-token-dataViz-category1: var(--alp-token-purple-1100);
+  --alp-token-dataViz-category2: var(--alp-token-magenta-1000);
+  --alp-token-dataViz-category3: var(--alp-token-magenta-800);
+  --alp-token-dataViz-category4: var(--alp-token-blue-700);
+  --alp-token-dataViz-category5: var(--alp-token-cyan-600);
+  --alp-token-dataViz-category6: var(--alp-token-cyan-900);
+  --alp-token-dataViz-category7: var(--alp-token-green-600);
+  --alp-token-dataViz-category8: var(--alp-token-green-800);
+  --alp-token-dataViz-category9: var(--alp-token-yellow-500);
+  --alp-token-dataViz-category10: var(--alp-token-orange-600);
+  --alp-token-dataViz-category11: var(--alp-token-red-800);
+  --alp-token-dataViz-category12: var(--alp-token-red-1100);
+  --alp-token-dataViz-category13: var(--alp-token-purple-900);
+  --alp-token-dataViz-category14: var(--alp-token-blue-500);
+  --alp-token-dataViz-category15: var(--alp-token-blue-1000);
+  --alp-token-dataViz-seqN1color1: var(--alp-token-blue-800);
+  --alp-token-dataViz-seqN2color1: var(--alp-token-blue-800);
+  --alp-token-dataViz-seqN2color2: var(--alp-token-blue-400);
+  --alp-token-dataViz-seqN3color1: var(--alp-token-purple-1000);
+  --alp-token-dataViz-seqN3color2: var(--alp-token-purple-700);
+  --alp-token-dataViz-seqN3color3: var(--alp-token-purple-300);
+  --alp-token-dataViz-seqN4color1: var(--alp-token-purple-1000);
+  --alp-token-dataViz-seqN4color2: var(--alp-token-purple-700);
+  --alp-token-dataViz-seqN4color3: var(--alp-token-purple-500);
+  --alp-token-dataViz-seqN4color4: var(--alp-token-purple-200);
+  --alp-token-dataViz-seqN5color1: var(--alp-token-purple-1000);
+  --alp-token-dataViz-seqN5color2: var(--alp-token-purple-800);
+  --alp-token-dataViz-seqN5color3: var(--alp-token-purple-600);
+  --alp-token-dataViz-seqN5color4: var(--alp-token-purple-400);
+  --alp-token-dataViz-seqN5color5: var(--alp-token-purple-200);
+  --alp-token-dataViz-seqN6color1: var(--alp-token-purple-1000);
+  --alp-token-dataViz-seqN6color2: var(--alp-token-purple-800);
+  --alp-token-dataViz-seqN6color3: var(--alp-token-purple-600);
+  --alp-token-dataViz-seqN6color4: var(--alp-token-purple-400);
+  --alp-token-dataViz-seqN6color5: var(--alp-token-purple-200);
+  --alp-token-dataViz-seqN6color6: var(--alp-token-purple-100);
+  --alp-token-focus-default: var(--alp-token-purple-1100);
+  --alp-token-gradient-primary: var(--alp-token-gradient-primary-onLight);
+  --alp-token-gradient-primaryStrong: var(
+    --alp-token-gradient-primary-strong-onLight
+  );
+  --alp-token-gradient-primaryWeak: var(
+    --alp-token-gradient-primary-weak-onLight
+  );
+  --alp-token-gradient-weak: var(--alp-token-gradient-weak-onLight);
+  --alp-token-gradient-success: var(--alp-token-gradient-success-onLight);
+  --alp-token-borderRadius-xs: var(--alp-token-border-radius-xs);
+  --alp-token-borderRadius-sm: var(--alp-token-border-radius-sm);
+  --alp-token-borderRadius-md: var(--alp-token-border-radius-md);
+  --alp-token-borderRadius-lg: var(--alp-token-border-radius-lg);
+  --alp-token-borderRadius-xl: var(--alp-token-border-radius-xl);
+  --alp-token-borderRadius-none: var(--alp-token-border-radius-none);
+  --alp-token-borderRadius-round: var(--alp-token-border-radius-round);
+  --alp-token-borderRadius-button: var(--alp-token-border-radius-sm);
+  --alp-token-borderRadius-input: var(--alp-token-border-radius-sm);
+  --alp-token-borderRadius-menu: var(--alp-token-border-radius-sm);
+  --alp-token-borderRadius-card: var(--alp-token-border-radius-lg);
+  --alp-token-borderRadius-modal: var(--alp-token-border-radius-xl);
+  --alp-token-shadow-card: var(--alp-token-shadow-card-onLight);
+  --alp-token-shadow-cardHover: var(--alp-token-shadow-card-hover-onLight);
+  --alp-token-shadow-drawer: var(--alp-token-shadow-drawer-onLight);
+  --alp-token-shadow-modal: var(--alp-token-shadow-modal-onLight);
+  --alp-token-shadow-menu: var(--alp-token-shadow-menu-onLight);
+  --alp-token-shadow-tooltip: var(--alp-token-shadow-tooltip-onLight);
+  --alp-token-shadow-sidebar: var(--alp-token-shadow-sidebar-onLight);
+  --alp-token-shadow-buttonHover: var(--alp-token-shadow-button-hover-onLight);
+  --alp-token-shadow-borderSpread: var(
+    --alp-token-shadow-border-spread-onLight
+  );
+  --alp-token-backdrop-modal: var(--alp-token-backdrop);
+}
