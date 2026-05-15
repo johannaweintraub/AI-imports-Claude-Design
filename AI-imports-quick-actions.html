@@ -220,6 +220,7 @@ body {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .ai-planner-step-text.locked { color: #c4c3c2; }
+.ai-planner-step-text.current { font-weight: 600; color: #151414; }
 .ai-planner-step-bar {
   flex: 1; height: 16px; background: #f2efef; border-radius: 4px;
 }
@@ -377,8 +378,8 @@ body.walkthrough-active .table-editable tbody tr.ai-row td {
   border-right-color: var(--alp-token-border-weak, #e7e5e4) !important;
   border-bottom-color: var(--alp-token-border-weak, #e7e5e4) !important;
 }
-body.walkthrough-active .table-editable tbody tr.ai-row td[data-col-key="name"],
-body.walkthrough-active .table-editable tbody tr.ai-row td[data-col-key="id"] {
+body.walkthrough-active .table-editable tbody tr.ai-row td[data-col-key="name"]:has(.ai-sparkle),
+body.walkthrough-active .table-editable tbody tr.ai-row td[data-col-key="id"]:has(.ai-sparkle) {
   background: #efe9fe !important;
   border-right-color: #c7b6f3 !important;
   border-bottom-color: #c7b6f3 !important;
@@ -386,8 +387,8 @@ body.walkthrough-active .table-editable tbody tr.ai-row td[data-col-key="id"] {
 body.walkthrough-active .table-editable tbody tr.ai-row:hover td {
   background: #fff !important;
 }
-body.walkthrough-active .table-editable tbody tr.ai-row:hover td[data-col-key="name"],
-body.walkthrough-active .table-editable tbody tr.ai-row:hover td[data-col-key="id"] {
+body.walkthrough-active .table-editable tbody tr.ai-row:hover td[data-col-key="name"]:has(.ai-sparkle),
+body.walkthrough-active .table-editable tbody tr.ai-row:hover td[data-col-key="id"]:has(.ai-sparkle) {
   background: #e6dffc !important;
 }
 body.walkthrough-active .table-editable tbody tr.duplicate-row td {
@@ -404,7 +405,7 @@ body.walkthrough-active .table-editable tbody tr.duplicate-row:hover td {
   background: #fff !important;
 }
 body.walkthrough-active .table-editable tbody tr.duplicate-row:hover td.cell-has-error {
-  background: #f6dfbc !important;
+  /* no hover tint */
 }
 
 /* ── CHAT PANEL ─────────────────────────────────────── */
@@ -599,6 +600,37 @@ body.walkthrough-active .table-editable tbody tr.duplicate-row:hover td.cell-has
   line-height: 1.4; margin-top: 1px;
 }
 .cf-canvas-open-label { font-size: 13px; font-weight: 500; color: #151414; white-space: nowrap; flex-shrink: 0; }
+
+/* When the canvas is open, collapse focus cards (AI, duplicates, errors, etc.)
+   so the canvas is the source of truth. Mirror the import-card collapsed look:
+   muted grey background and a small "Canvas is open" label in the header. */
+body.canvas-open .focus-card {
+  background: #e6e6e9 !important;
+  border-color: #c9c8cd !important;
+}
+body.canvas-open .focus-card .focus-card-rowlist,
+body.canvas-open .focus-card .focus-card-footer,
+body.canvas-open .focus-card .focus-card-sub {
+  display: none !important;
+}
+body.canvas-open .focus-card .focus-card-header {
+  padding: 14px 14px;
+}
+body.canvas-open .focus-card .focus-card-title {
+  color: #6e6c6b !important;
+}
+body.canvas-open .focus-card .focus-card-icon {
+  opacity: 0.6;
+}
+body.canvas-open .focus-card .focus-card-header::after {
+  content: 'Canvas is open';
+  margin-left: auto;
+  font-size: 13px; font-weight: 500; color: #151414;
+  white-space: nowrap; flex-shrink: 0;
+}
+/* Resolved focus cards already use a static layout — keep them readable */
+body.canvas-open .focus-card.is-resolved .focus-card-header::after { content: none; }
+body.canvas-open .focus-card.is-resolved { opacity: 0.85; }
 
 /* Mapping summary card — shown in chat before extracted controls */
 .map-card-section {
@@ -833,7 +865,7 @@ body.mr-edit-active { /* placeholder so we know the mapping page is showing the 
 .focus-card-icon.ai { background: #f0ebfc; color: #7c3aed; }
 .focus-card-icon.dup { background: #fdf1e4; color: #d97706; }
 .focus-card-icon.map { background: #eef2fb; color: #3b5bdb; }
-.focus-card-icon.err { background: #fff0f0; color: #c2410c; }
+.focus-card-icon.err { background: #FAE9D2; color: #92400e; }
 .focus-card-title-group { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .focus-card-title { font-size: 13px; font-weight: 600; color: #151421; line-height: 1.35; }
 .focus-card-sub { font-size: 12px; color: #6e6c6b; line-height: 1.35; }
@@ -1362,6 +1394,25 @@ body.mr-edit-active { /* placeholder so we know the mapping page is showing the 
   transition: background .15s, opacity .15s;
 }
 .sp-filter-pill-dismiss:hover { background: #f0e0fb; opacity: 1; }
+
+/* Yellow variant — used while reviewing duplicates or errors
+   (owners / framework codes). The purple variant above stays for the
+   AI-generated walkthrough. */
+.sp-filter-pill.sp-filter-pill--warn {
+  background: #fef3da;
+  color: #92400e;
+  border-color: #fcd9a4;
+}
+.sp-filter-pill.sp-filter-pill--warn .sp-filter-pill-count {
+  background: #fae3b8;
+  color: #92400e;
+}
+.sp-filter-pill.sp-filter-pill--warn .sp-filter-pill-dismiss {
+  color: #92400e;
+}
+.sp-filter-pill.sp-filter-pill--warn .sp-filter-pill-dismiss:hover {
+  background: #fae3b8;
+}
 @keyframes pillFadeIn {
   from { opacity: 0; transform: translateY(-2px); }
   to { opacity: 1; transform: translateY(0); }
@@ -1438,19 +1489,46 @@ table.sptable {
 .sptable .row-colname th.required .th-required {
   font-weight: 400; color: inherit;
 }
-#sptable-head.col-mapping-active .row-colname th { background: #151414 !important; color: #fff !important; }
-#sptable-head.col-mapping-active .row-colname th:hover { background: #2a2a2a !important; color: #fff !important; }
+#sptable-head.col-mapping-active .row-colname th { background: #f2f2f5 !important; color: var(--text) !important; }
+#sptable-head.col-mapping-active .row-colname th:first-child { background: transparent !important; }
+#sptable-head.col-mapping-active .row-colname th:hover { background: #e8e8ec !important; color: var(--text) !important; }
 #sptable-head.col-mapping-active .row-colname th.col-selected { background: #ede9fb !important; }
 #sptable-head.col-mapping-active .row-colname th.required .th-required { color: inherit; }
-#sptable-head.col-mapping-active .th-map-btn { color: #fff; }
-#sptable-head.col-mapping-active .row-colname th:hover .th-map-btn { color: #fff; }
-#sptable-head.col-mapping-active .th-map-btn.open { background: rgba(255,255,255,0.15); }
+#sptable-head.col-mapping-active .th-map-btn { color: #6b6b80; }
+#sptable-head.col-mapping-active .row-colname th:hover .th-map-btn { color: var(--text); }
+#sptable-head.col-mapping-active .th-map-btn.open { background: rgba(0,0,0,.06); }
+/* Column-mapping step: data rows are read-only and fade out toward the bottom
+   so the header is the focus. Only show the first ~10 rows. */
+#sptable.col-mapping-active:not(.mapping-confirmed) tbody tr td {
+  pointer-events: none;
+  user-select: none;
+  color: rgba(21, 20, 33, 0.85);
+  border-color: rgba(220, 219, 219, 0.85);
+}
+#sptable.col-mapping-active:not(.mapping-confirmed) tbody tr td .cell-dash,
+#sptable.col-mapping-active:not(.mapping-confirmed) tbody tr td .cell-tag {
+  opacity: 0.85;
+}
+#sptable.col-mapping-active:not(.mapping-confirmed) tbody tr:nth-child(n+11) { display: none; }
+#sptable.col-mapping-active:not(.mapping-confirmed) tbody {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 18%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 0%, #000 18%, transparent 100%);
+}
+#sp-table-wrap:has(#sptable.col-mapping-active:not(.mapping-confirmed)) {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
 #sptable-head.col-mapping-active .row-colname th.th-dropdown-open { background: #ede9fb !important; color: var(--purple) !important; }
 .th-inner {
   display: flex; align-items: center; justify-content: space-between;
   gap: 6px; padding: 10px 10px 10px 14px; min-height: 36px;
 }
 .th-label { display: inline-flex; align-items: center; flex: 1; min-width: 0; }
+.th-name {
+  display: inline-block; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  flex: 0 1 auto;
+}
 .th-map-btn {
   opacity: 1;
   display: inline-flex; align-items: center;
@@ -1466,18 +1544,19 @@ table.sptable {
   display: inline-flex; align-items: center; gap: 3px;
   font-size: 9px; font-weight: 600; letter-spacing: .02em;
   padding: 1px 5px 1px 5px; border-radius: 8px;
-  background: #e8e8ec; color: #6b6b80;
+  background: #ede9fb; color: var(--purple);
   margin-left: 6px; cursor: help; flex-shrink: 0;
   text-transform: none;
   transition: background .12s, color .12s;
 }
 .th-custom-chip:hover { background: #d9d6f1; color: var(--purple); }
 .th-custom-chip .th-info-icon { display: block; margin-left: 1px; }
+.th-custom-chip .th-chip-sparkle { display: block; margin-right: 1px; flex-shrink: 0; }
 #sptable-head.col-mapping-active .th-custom-chip {
-  background: rgba(255,255,255,0.16); color: #fff;
+  background: #ede9fb; color: var(--purple);
 }
 #sptable-head.col-mapping-active .th-custom-chip:hover {
-  background: #ede9fb; color: var(--purple);
+  background: #d9d6f1; color: var(--purple);
 }
 
 /* Floating info popover for custom-field chip */
@@ -1503,6 +1582,7 @@ table.sptable {
 .ip-meta dt { color: #6b6b80; font-weight: 400; }
 .ip-meta dd { color: #151414; margin: 0; font-weight: 500; }
 .ip-desc { color: #4a4a52; margin: 0 0 4px; }
+.ip-desc-sparkle { display: inline-flex; align-items: center; margin-right: 5px; vertical-align: -1px; }
 .ip-foot {
   border-top: 1px solid #f0f0f4; padding: 8px 14px;
   display: flex; align-items: center; justify-content: space-between;
@@ -1562,10 +1642,29 @@ table.sptable {
   cursor: pointer; user-select: none;
 }
 .sptable tbody td:first-child:hover { background: transparent !important; color: #6b6b7a; }
-.sptable tbody tr.row-selected td { background: rgba(110,108,107,0.07) !important; border-right-color: var(--border) !important; border-bottom-color: var(--border) !important; }
-.sptable tbody tr.row-selected td:first-child { background: transparent !important; color: var(--text-mid) !important; border-right: none !important; }
-.sptable tbody tr.row-selected:hover td { background: rgba(110,108,107,0.11) !important; }
-.sptable tbody tr.row-selected:hover td:first-child { background: transparent !important; }
+/* Row selection overlay: blue (20% alpha) sits on top of whatever background
+   color the cell already has (yellow for errors, purple for duplicates,
+   orange step-active, etc.). Using `inset box-shadow` instead of changing
+   `background-color` so the existing status color shows through underneath
+   the blue tint. */
+.sptable tbody tr.row-selected td {
+  box-shadow: inset 0 0 0 9999px rgba(59,130,246,0.20);
+  border-right-color: var(--border) !important;
+  border-bottom-color: var(--border) !important;
+}
+.sptable tbody tr.row-selected td:first-child {
+  box-shadow: none !important;
+  background: transparent !important;
+  color: var(--text-mid) !important;
+  border-right: none !important;
+}
+.sptable tbody tr.row-selected:hover td {
+  box-shadow: inset 0 0 0 9999px rgba(59,130,246,0.28);
+}
+.sptable tbody tr.row-selected:hover td:first-child {
+  box-shadow: none !important;
+  background: transparent !important;
+}
 /* Force first column to be borderless and transparent regardless of row state */
 .sptable tbody td:first-child,
 .sptable tbody tr:hover td:first-child,
@@ -1599,29 +1698,81 @@ table.sptable {
 }
 .cell-tag .tag-x:hover { color: var(--red); }
 .cell-dash { color: #c4c4cc; }
+/* Header "select all" checkbox: hidden by default, fades in whenever the
+   user hovers anywhere over the header row (or the table). Always visible
+   once any rows are selected (the checked/indeterminate SVGs don't carry
+   the .row-select-all-box class, so this only targets the empty state). */
+.row-select-all-box { opacity: 0; transition: opacity .12s; }
+.sptable thead:hover .row-select-all-box,
+#sptable-head:hover .row-select-all-box,
+#sp-thead-wrap:hover .row-select-all-box,
+#sheet-panel:hover .row-select-all-box { opacity: 1; }
+
+/* Mismatch chip — shown when a cell value doesn't match the column's
+   currently-mapped type (e.g. control-name values under a framework column). */
+.cell-mismatch-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 4px 2px 6px; max-width: 100%;
+  background: #fff5e6; color: #92400e;
+  border: 1px solid #fcd9a4; border-radius: 4px;
+  font-size: 11.5px; font-weight: 500; line-height: 1.4;
+  white-space: nowrap;
+}
+.cell-mismatch-chip svg { color: #f59e0b; flex-shrink: 0; }
+.cell-mismatch-chip .cmc-text {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
+.cell-mismatch-chip .cmc-x {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 14px; height: 14px; border-radius: 3px;
+  color: #92400e; cursor: pointer; font-size: 14px; line-height: 1;
+  margin-left: 2px; flex-shrink: 0;
+  transition: background .12s, color .12s;
+}
+.cell-mismatch-chip .cmc-x:hover { background: #fde2c0; color: #7c2d12; }
+
+/* During the column-mapping step, surface mismatches in grey instead of
+   yellow — the user is still deciding the mapping, not actively fixing
+   per-row errors. */
+#sptable.col-mapping-active:not(.mapping-confirmed) .cell-mismatch-chip {
+  background: #f0f0f2;
+  border-color: #dcdce4;
+  color: #6e6c6b;
+}
+#sptable.col-mapping-active:not(.mapping-confirmed) .cell-mismatch-chip svg {
+  color: #8a8784;
+}
+#sptable.col-mapping-active:not(.mapping-confirmed) .cell-mismatch-chip .cmc-x {
+  color: #6e6c6b;
+}
+#sptable.col-mapping-active:not(.mapping-confirmed) .cell-mismatch-chip .cmc-x:hover {
+  background: #e5e5e9; color: #151421;
+}
+#sptable.col-mapping-active:not(.mapping-confirmed) .cell-mismatch-chip .cmc-sparkle svg {
+  filter: grayscale(1) brightness(0.8);
+  opacity: 0.7;
+}
 
 /* Step-scoped cell highlighting: only the cells that relate to the error
    being addressed in the current step get a coloured background. */
 
-/* DUPLICATE step: highlight only ID + name cells; suppress any walkthrough-mode
-   orange "cell-has-error" backgrounds on other columns. */
+/* DUPLICATE step: only the cells that actually match another duplicate row's
+   ID or Description get the yellow highlight (set via .cell-dup-match in
+   renderTable). Names are intentionally not highlighted. */
 body.step-dup .table-editable tbody tr.duplicate-row td,
 body.step-dup .table-editable tbody tr.duplicate-row td.cell-has-error {
   background: #fff !important;
   border-right-color: var(--alp-token-border-weak, #e7e5e4) !important;
   border-bottom-color: var(--alp-token-border-weak, #e7e5e4) !important;
 }
-body.step-dup .table-editable tbody tr.duplicate-row td[data-col-key="id"],
-body.step-dup .table-editable tbody tr.duplicate-row td[data-col-key="id"].cell-has-error,
-body.step-dup .table-editable tbody tr.duplicate-row td[data-col-key="name"],
-body.step-dup .table-editable tbody tr.duplicate-row td[data-col-key="name"].cell-has-error {
+body.step-dup .table-editable tbody tr.duplicate-row td.cell-dup-match,
+body.step-dup .table-editable tbody tr.duplicate-row td.cell-dup-match.cell-has-error {
   background: #FAE9D2 !important;
   border-right-color: #efd2a4 !important;
   border-bottom-color: #efd2a4 !important;
 }
-body.step-dup .table-editable tbody tr.duplicate-row:hover td[data-col-key="id"],
-body.step-dup .table-editable tbody tr.duplicate-row:hover td[data-col-key="name"] {
-  background: #f6dfbc !important;
+body.step-dup .table-editable tbody tr.duplicate-row:hover td.cell-dup-match {
+  /* no hover tint */
 }
 
 /* OWNER step: highlight only owner cells flagged as unidentified;
@@ -1637,13 +1788,16 @@ body.step-owner .table-editable tbody td[data-col-key="owner"].cell-has-error {
   border-bottom-color: #efd2a4 !important;
 }
 body.step-owner .table-editable tbody tr:hover td[data-col-key="owner"].cell-has-error {
-  background: #f6dfbc !important;
+  /* no hover tint */
 }
 /* When a specific owner is being addressed, restrict the highlight to that owner's cells only. */
 body.step-owner.has-step-item .table-editable tbody td[data-col-key="owner"].cell-has-error {
-  background: transparent !important;
-  border-right-color: var(--alp-token-border-weak, #e7e5e4) !important;
-  border-bottom-color: var(--alp-token-border-weak, #e7e5e4) !important;
+  /* Keep all unidentified-owner cells yellow — the active item gets its
+     existing focus treatment from .cell-step-active, but the rest still
+     read as flagged so the user can see what's left to resolve. */
+  background: #FAE9D2 !important;
+  border-right-color: #efd2a4 !important;
+  border-bottom-color: #efd2a4 !important;
 }
 body.step-owner.has-step-item .table-editable tbody td.cell-step-active {
   background: #FAE9D2 !important;
@@ -1651,7 +1805,7 @@ body.step-owner.has-step-item .table-editable tbody td.cell-step-active {
   border-bottom-color: #efd2a4 !important;
 }
 body.step-owner.has-step-item .table-editable tbody tr:hover td.cell-step-active {
-  background: #f6dfbc !important;
+  /* no hover tint */
 }
 
 /* CODE step: highlight only framework-code cells with unfound codes;
@@ -1673,7 +1827,7 @@ body.step-code .table-editable tbody tr:hover td[data-col-key="soc2"].cell-has-e
 body.step-code .table-editable tbody tr:hover td[data-col-key="iso"].cell-has-error,
 body.step-code .table-editable tbody tr:hover td[data-col-key="hipaa"].cell-has-error,
 body.step-code .table-editable tbody tr:hover td[data-col-key="nist"].cell-has-error {
-  background: #f6dfbc !important;
+  /* no hover tint */
 }
 /* When a specific code is being addressed, restrict the highlight to ONLY
    the cell holding that exact code (other unfound codes wait their turn). */
@@ -1692,7 +1846,7 @@ body.step-code.has-step-item .table-editable tbody td.cell-step-active {
   border-bottom-color: #efd2a4 !important;
 }
 body.step-code.has-step-item .table-editable tbody tr:hover td.cell-step-active {
-  background: #f6dfbc !important;
+  /* no hover tint */
 }
 
 /* Suppress warning icons in cells that don't belong to the active step */
@@ -2188,6 +2342,7 @@ body.import-ready .table-editable tbody tr.duplicate-row td.cell-has-error {
   background: #FAF8F8 !important; color: var(--text-mid) !important;
   border-bottom-color: var(--border) !important;
 }
+.table-editable .row-colname th:first-child { background: transparent !important; }
 .table-editable .row-colname th:hover { background: #f0f0f2 !important; }
 .table-editable td { cursor: pointer; }
 .table-editable td:first-child { cursor: pointer; }
@@ -2548,7 +2703,7 @@ body.import-ready .table-editable tbody tr.duplicate-row td.cell-has-error {
 .hs-vanta-logo svg { width: 10px; height: 10px; fill: #fff; }
 </style>
 </head>
-<body>
+<body style="background-color: rgb(250, 233, 210)">
 
 <!-- ══ HOME SCREEN ══════════════════════════════════════ -->
 <div id="screen-home">
@@ -2942,7 +3097,7 @@ body.import-ready .table-editable tbody tr.duplicate-row td.cell-has-error {
       <div class="notif-avatar" style="background:#8b5cf6;">VT</div>
       <div class="notif-body">
         <div class="notif-text"><strong>Vlad Van Taroni</strong> commented on <strong>jira test questionnaire</strong></div>
-        <div class="notif-quote">"@<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d3b212c290d3b2c23392c3f2222632e2220">[email&#160;protected]</a> test a quest..."</div>
+        <div class="notif-quote">"@<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1d6b717c795d6b7c73697c6f7272337e7270">[email&#160;protected]</a> test a quest..."</div>
       </div>
       <div class="notif-time">44d</div>
     </div>
@@ -2958,7 +3113,7 @@ body.import-ready .table-editable tbody tr.duplicate-row td.cell-has-error {
       <div class="notif-avatar" style="background:#10b981;">AC</div>
       <div class="notif-body">
         <div class="notif-text"><strong>Audrey Collaborator</strong> commented on <strong>Contractor Conduct Expectations</strong></div>
-        <div class="notif-quote">"@<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="10667c71745066717e6471627f7f3e737f7d">[email&#160;protected]</a> lasdfafsdf"</div>
+        <div class="notif-quote">"@<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="16607a77725660777862776479793875797b">[email&#160;protected]</a> lasdfafsdf"</div>
       </div>
       <div class="notif-time">70d</div>
     </div>
@@ -3165,12 +3320,12 @@ body.import-ready .table-editable tbody tr.duplicate-row td.cell-has-error {
         </div>
       </div>
 
-      <div class="sp-filter-pill-bar" id="sp-tabs" style="display: none; padding: 10px 32px 6px 32px; border-width: 0px; opacity: 1">
+      <div class="sp-filter-pill-bar" id="sp-tabs" style="display: none; padding: 16px 32px 6px 40px; border-width: 0px; opacity: 1">
         <div class="sp-filter-pill" id="sp-filter-pill" role="status">
           <svg class="sp-filter-pill-icon" width="13" height="13" fill="none" viewBox="0 0 14 14" aria-hidden="true">
             <path d="M2 3h10M4 7h6M6 11h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
           </svg>
-          <span class="sp-filter-pill-label" id="sp-filter-pill-label">Filtered</span>
+          <span class="sp-filter-pill-label" id="sp-filter-pill-label">Duplicate controls</span>
           <span class="sp-filter-pill-count" id="sp-filter-pill-count" hidden></span>
           <button type="button" class="sp-filter-pill-dismiss" id="sp-filter-pill-dismiss" onclick="dismissFilterPill()" title="Clear filter" aria-label="Clear filter">
             <svg width="10" height="10" fill="none" viewBox="0 0 10 10" aria-hidden="true">
@@ -3180,7 +3335,7 @@ body.import-ready .table-editable tbody tr.duplicate-row td.cell-has-error {
         </div>
       </div>
 
-      <div class="sp-thead-wrap" id="sp-thead-wrap" style="border-width: 0px; padding: 32px 32px 0px 0px">
+      <div class="sp-thead-wrap" id="sp-thead-wrap" style="border-width: 0px; padding: 12px 32px 0px 0px">
         <table class="sptable" id="sptable-head">
           <thead>
             <tr class="row-mapping" id="row-mapping">
@@ -3318,7 +3473,7 @@ const COLUMNS = [
   { key: 'desc',  label: 'DESCRIPTION', required: true,  width: 300 },
   { key: 'owner', label: 'OWNER',       required: false, width: 180 },
   { key: 'dept',  label: 'DEPARTMENT',  required: false, width: 210 },
-  { key: 'risk',  label: 'RISK SCORE',  required: false, width: 140 },
+  { key: 'risk',  label: 'RISK SCORE',  required: false, width: 180 },
   { key: 'soc2',  label: 'SOC2',        required: false, width: 160 },
   { key: 'iso',   label: 'ISO27001',    required: false, width: 160 },
   { key: 'hipaa', label: 'HIPAA',       required: false, width: 140 },
@@ -3371,6 +3526,11 @@ RAW_DATA.push({ row:110, id:'Acme-110', name:'Data Encryption Standards', desc:'
 
 // Backfill risk score values (1–10) for every row
 RAW_DATA.forEach(r => { if (r.risk == null) r.risk = ((r.row * 7) % 10) + 1; });
+// Stamp a unique `_uid` on each row. RAW_DATA has row-number collisions
+// between the filler loop (row=107/108) and the duplicate pushes that share
+// those numbers — without a unique key, two rows produce the same cellKey
+// and click-to-select highlights both.
+RAW_DATA.forEach((r, i) => { r._uid = i; });
 // Flag a handful of rows as having AI-generated IDs (separate from rows with
 // AI-generated names). The walkthrough lists both in the same focus card.
 [12, 25, 38].forEach(rowNum => {
@@ -3460,17 +3620,21 @@ let dupHighlightRows = new Set(); // which duplicate row numbers to highlight ye
 let stateHistory = []; // for go-back functionality
 
 function cellKey(row, colKey) { return `${row}:${colKey}`; }
-function selectCellRange(anchorRow, anchorColKey, toRow, toColKey) {
-  const visibleRowNums = RAW_DATA.filter(r => !removedRows.has(r.row)).map(r => r.row);
+function selectCellRange(anchorUid, anchorColKey, toUid, toColKey) {
+  // anchor*: row `_uid` (unique array-index identifier). Without a unique
+  // key, two RAW_DATA rows sharing the same `r.row` (e.g. filler row 107 +
+  // a duplicate push at row 107) would produce identical cellKeys.
+  const visibleUids = RAW_DATA.filter(r => !removedRows.has(r.row)).map(r => r._uid);
   const visibleColKeys = COLUMNS.filter(c => !removedCols.has(c.key)).map(c => c.key);
-  const aRi = visibleRowNums.indexOf(anchorRow), bRi = visibleRowNums.indexOf(toRow);
+  const aRi = visibleUids.indexOf(anchorUid), bRi = visibleUids.indexOf(toUid);
   const aCi = visibleColKeys.indexOf(anchorColKey), bCi = visibleColKeys.indexOf(toColKey);
+  if (aRi < 0 || bRi < 0 || aCi < 0 || bCi < 0) return;
   const [rLo, rHi] = aRi < bRi ? [aRi, bRi] : [bRi, aRi];
   const [cLo, cHi] = aCi < bCi ? [aCi, bCi] : [bCi, aCi];
   selectedCells = new Set();
   for (let ri = rLo; ri <= rHi; ri++)
     for (let ci = cLo; ci <= cHi; ci++)
-      selectedCells.add(cellKey(visibleRowNums[ri], visibleColKeys[ci]));
+      selectedCells.add(cellKey(visibleUids[ri], visibleColKeys[ci]));
 }
 
 // ── COLUMN DROPDOWN OPTIONS by key ───────────────────
@@ -3529,8 +3693,10 @@ function openOwnerDd(td, rowData) {
     const targets = selectedRows.size > 1 && selectedRows.has(rowData.row)
       ? RAW_DATA.filter(r => selectedRows.has(r.row))
       : [rowData];
+    const changed = targets.some(r => r.owner !== val);
     targets.forEach(r => r.owner = val);
     closeCellDd();
+    if (changed) triggerAutosave();
     renderTable();
   };
 
@@ -3603,6 +3769,7 @@ function openFrameworkDd(td, rowData, colKey) {
         const idx = arr.indexOf(code);
         if (idx > -1) arr.splice(idx, 1); else arr.push(code);
         rowData[colKey] = arr;
+        triggerAutosave();
         renderDd();
       });
     });
@@ -3627,15 +3794,27 @@ function startTextEdit(td, rowData, colKey) {
   const editor = document.createElement('div');
   editor.contentEditable = 'true';
   editor.className = 'cell-edit-input';
-  editor.textContent = rowData[colKey] || '';
+  const originalValue = rowData[colKey] || '';
+  editor.textContent = originalValue;
   td.innerHTML = ''; td.appendChild(editor);
   editor.focus();
   const range = document.createRange();
   range.selectNodeContents(editor); range.collapse(false);
   const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
   editor.addEventListener('blur', () => {
-    rowData[colKey] = editor.textContent.trim();
+    const newValue = editor.textContent.trim();
+    const changed = newValue !== (originalValue || '').toString().trim();
+    rowData[colKey] = newValue;
+    // If the user cleared an AI-flagged cell, drop the AI flag so the cell
+    // no longer renders with the purple sparkle treatment. The empty-cell
+    // branch in renderTable will then surface the required-field error icon
+    // automatically when applicable (e.g. Control ID).
+    if (newValue === '') {
+      if (colKey === 'name' && rowData.ai) rowData.ai = false;
+      if (colKey === 'id'   && rowData.aiId) rowData.aiId = false;
+    }
     td.classList.remove('cell-editing');
+    if (changed) triggerAutosave();
     renderTable();
   });
   editor.addEventListener('keydown', e => {
@@ -3658,6 +3837,45 @@ function isValidForFormat(val, format) {
     return true;
   }
   return true;
+}
+
+// ── AUTOSAVE INDICATOR (removed) ────────────────────────────
+function triggerAutosave() { /* no-op — indicator has been removed */ }
+
+// ── CELL ↔ MAPPING MISMATCH ───────────────────────────
+// When the user re-maps a column (e.g. "name" → SOC2), surface the values in
+// the rows below as mismatch chips so it's obvious the data doesn't fit the
+// new mapping. Returns null when the value matches, or { reason } when it
+// doesn't.
+const _FW_LABEL_TO_KEY = {
+  'SOC2': 'soc2', 'SOC 2': 'soc2',
+  'ISO27001': 'iso', 'ISO 27001': 'iso',
+  'HIPAA': 'hipaa', 'NIST': 'nist', 'ISM': 'ism',
+};
+function cellMappingMismatch(col, val) {
+  if (val == null || val === '') return null;
+  const meta = COL_META[col.key];
+  if (!meta) return null;
+  if (meta.type === 'vanta-framework' || meta.type === 'custom-framework') {
+    const fwKey = _FW_LABEL_TO_KEY[meta.value]
+      || (['soc2','iso','hipaa','nist','ism'].includes(col.key) ? col.key : null);
+    if (!fwKey) return null;
+    const codes = (FRAMEWORK_CODES[fwKey] || []).map(c => c.code);
+    if (!codes.length) return null;
+    if (Array.isArray(val)) {
+      const bad = val.filter(v => !codes.includes(v));
+      return bad.length ? { reason: 'Not a valid ' + (meta.value || fwKey) + ' code' } : null;
+    }
+    return codes.includes(val)
+      ? null
+      : { reason: 'Not a valid ' + (meta.value || fwKey) + ' code' };
+  }
+  if (meta.type === 'custom-field' && meta.format) {
+    if (!isValidForFormat(val, meta.format)) {
+      return { reason: 'Doesn\'t match ' + meta.format };
+    }
+  }
+  return null;
 }
 
 // ── RENDER TABLE ──────────────────────────────────────
@@ -3709,7 +3927,7 @@ function renderTable() {
   });
 
   // Column names
-  const warnSvg = `<span class="warn-tip" data-tip="Multiple columns mapped to the same field" style="display:inline-flex;align-items:center;"><svg width="13" height="13" fill="none" viewBox="0 0 14 14" style="flex-shrink:0;margin-left:3px;vertical-align:middle;"><path d="M7 1.5L13 12H1L7 1.5z" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#f59e0b" stroke-width="1.3" stroke-linecap="round"/></svg></span>`;
+  const warnSvg = `<span class="warn-tip" data-tip="Multiple columns mapped to the same field" style="display:inline-flex;align-items:center;"><svg width="13" height="13" fill="none" viewBox="0 0 14 14" style="flex-shrink:0;margin-left:3px;vertical-align:middle;"><path d="M7 1.5L13 12H1L7 1.5z" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/></svg></span>`;
   const visibleRowData = RAW_DATA.filter(r => !removedRows.has(r.row));
   const selectedVisibleCount = visibleRowData.reduce((n, r) => n + (selectedRows.has(r.row) ? 1 : 0), 0);
   const allSelected = visibleRowData.length > 0 && selectedVisibleCount === visibleRowData.length;
@@ -3718,16 +3936,8 @@ function renderTable() {
   headerCheckTh.style.cssText = 'min-width:40px;width:40px;cursor:pointer;';
   const checkedSvg = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:block;margin:auto"><rect width="14" height="14" rx="3" fill="#6b6b80"/><path d="M3 7l3 3 5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const indeterminateSvg = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:block;margin:auto"><rect width="14" height="14" rx="3" fill="#6b6b80"/><path d="M3.5 7h7" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>`;
-  const emptySvg = `<svg class="row-select-all-box" width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:block;margin:auto;opacity:0"><rect x="0.5" y="0.5" width="13" height="13" rx="2.5" stroke="#a1a1aa" stroke-width="1"/></svg>`;
+  const emptySvg = `<svg class="row-select-all-box" width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:block;margin:auto;fill:grey"><rect x="0.5" y="0.5" width="13" height="13" rx="2.5" stroke="#a1a1aa" stroke-width="1"/></svg>`;
   headerCheckTh.innerHTML = allSelected ? checkedSvg : someSelected ? indeterminateSvg : emptySvg;
-  headerCheckTh.addEventListener('mouseenter', () => {
-    const box = headerCheckTh.querySelector('.row-select-all-box');
-    if (box) box.style.opacity = '1';
-  });
-  headerCheckTh.addEventListener('mouseleave', () => {
-    const box = headerCheckTh.querySelector('.row-select-all-box');
-    if (box) box.style.opacity = '0';
-  });
   headerCheckTh.addEventListener('click', (e) => {
     e.stopPropagation();
     // Clicking the header in any selected state (all or partial) clears it;
@@ -3757,9 +3967,19 @@ function renderTable() {
     const colIdx = COLUMNS.indexOf(col);
     const isCustomCol = col.key === 'ism' || col.key === 'dept' || col.key === 'risk';
     const infoSvg = `<svg class="th-info-icon" width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.1"/><path d="M6 5.2v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="6" cy="3.6" r="0.65" fill="currentColor"/></svg>`;
-    const customChip = isCustomCol ? `<span class="th-custom-chip" data-info-col="${col.key}">Custom${infoSvg}</span>` : '';
-    const labelHtml = `${typeIconHtml(meta?.type)}${displayName}${isRequired ? '&nbsp;<span class="th-required">(Required)</span>' : ''}${customChip}${isDuplicate ? warnSvg : ''}`;
-    th.innerHTML = `<div class="th-inner"><span class="th-label">${labelHtml}</span></div>`;
+    // Small purple sparkle on the left of the "Custom" chip — mirrors the
+    // sparkle treatment used in the agent's mapping summary card for new
+    // custom fields so the user can tell at a glance that this column was
+    // auto-created.
+    const chipSparkle = `<svg class="th-chip-sparkle" width="9" height="9" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1.5l.92 2.58L9.5 5l-2.58.92L6 8.5l-.92-2.58L2.5 5l2.58-.92L6 1.5z" fill="currentColor"/></svg>`;
+    const customChip = isCustomCol ? `<span class="th-custom-chip" data-info-col="${col.key}">${chipSparkle}Custom${infoSvg}</span>` : '';
+    const labelHtml = `${typeIconHtml(meta?.type)}<span class="th-name">${displayName}</span>${isRequired ? '&nbsp;<span class="th-required">(Required)</span>' : ''}${customChip}${isDuplicate ? warnSvg : ''}`;
+    // Inline mapping caret — opens the same dropdown the (now-hidden)
+    // "Edit mapping" row used to trigger, so the column header itself
+    // becomes the affordance for changing the mapping.
+    const isOpen = openDropdownCol === i;
+    const mapBtnHtml = `<button type="button" class="th-map-btn${isOpen ? ' open' : ''}" title="Edit mapping" aria-label="Edit mapping"><svg width="10" height="6" fill="none" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+    th.innerHTML = `<div class="th-inner"><span class="th-label">${labelHtml}</span>${mapBtnHtml}</div>`;
 
     if (selectedCols.has(colIdx)) th.classList.add('col-selected');
     th.style.cursor = 'pointer';
@@ -3767,6 +3987,14 @@ function renderTable() {
       e.stopPropagation();
       // Don't treat clicks on the info chip as a column-select
       if (e.target.closest('.th-custom-chip')) return;
+      // In column-mapping mode, clicking ANYWHERE on the header cell opens
+      // the mapping dropdown — anchored to the caret so it lines up tidily.
+      const inMappingMode = document.getElementById('sptable-head')?.classList.contains('col-mapping-active');
+      if (inMappingMode || e.target.closest('.th-map-btn')) {
+        const mapBtn = th.querySelector('.th-map-btn') || e.target.closest('.th-map-btn');
+        toggleDropdown(i, mapBtn);
+        return;
+      }
       selectedRows = new Set(); selectedCells = new Set(); anchorCell = null;
       if (e.shiftKey && lastSelectedCol !== null) {
         const visibleColIdxs = visibleCols.map(c => COLUMNS.indexOf(c));
@@ -3827,8 +4055,8 @@ function renderTable() {
       (r.name === 'Network Security Monitoring' && (r.row === 11 || r.row === 107 || r.row === 108))
     );
   } else if (walkthroughFocus === 'unidentified-owners') {
-    const focusRows = rowsToUnidentifiedOwners();
-    rows = rows.filter(r => focusRows.has(r.row));
+    const focusUids = rowsToUnidentifiedOwners();
+    rows = rows.filter(r => focusUids.has(r._uid));
   } else if (walkthroughFocus === 'unfound-codes') {
     const focusRows = rowsToUnfoundCodes();
     rows = rows.filter(r => focusRows.has(r.row));
@@ -3884,6 +4112,23 @@ function renderTable() {
     </td>`;
     tbody.appendChild(emptyTr);
   }
+  // Per-cell duplicate detection for the duplicates step: highlight an ID
+  // cell only when its value appears in another duplicate row, and highlight
+  // a Description cell only when its value appears in another duplicate row.
+  // Names are intentionally not highlighted — they're often the same across
+  // legitimately-different rows.
+  // During the dup-walkthrough, the rows shown are already filtered to the
+  // duplicate set (e.g. the 3 NSM rows), so every visible row participates
+  // in the duplicate match — including row 11 ("Acme-11.1") whose ID is
+  // unique but whose description matches the two Acme-11 duplicates.
+  const _inDupStep = walkthroughFocus === 'dup-nsm' || walkthroughFocus === 'dup-des' || walkthroughFocus === 'dup-all';
+  const _dupRowsActive = _inDupStep ? rows : rows.filter(r => r.duplicate);
+  const _dupIdCounts = {};
+  const _dupDescCounts = {};
+  _dupRowsActive.forEach(r => {
+    if (r.id) _dupIdCounts[r.id] = (_dupIdCounts[r.id] || 0) + 1;
+    if (r.desc) _dupDescCounts[r.desc] = (_dupDescCounts[r.desc] || 0) + 1;
+  });
   rows.forEach(r => {
     const tr = document.createElement('tr');
 
@@ -3917,7 +4162,14 @@ function renderTable() {
       td.style.minWidth = (col.width || 160) + 'px';
       td.dataset.colKey = col.key;
       if (selectedCols.has(COLUMNS.indexOf(col))) td.classList.add('col-selected');
-      if (selectedCells.has(cellKey(r.row, col.key))) td.classList.add('cell-selected');
+      if (selectedCells.has(cellKey(r._uid, col.key))) td.classList.add('cell-selected');
+      // Mark duplicate ID / description cells so the dup step can highlight
+      // only the cells that actually match another row.
+      const _eligibleAsDup = r.duplicate || _inDupStep;
+      if (_eligibleAsDup) {
+        if (col.key === 'id' && r.id && (_dupIdCounts[r.id] || 0) > 1) td.classList.add('cell-dup-match');
+        if (col.key === 'desc' && r.desc && (_dupDescCounts[r.desc] || 0) > 1) td.classList.add('cell-dup-match');
+      }
       const val = r[col.key];
       const isText = ['id','name','desc','dept','risk'].includes(col.key);
       const isOwner = col.key === 'owner';
@@ -3930,18 +4182,48 @@ function renderTable() {
           td.innerHTML = '<span class="cell-dash">—</span>';
         } else if (UNIDENTIFIED_OWNERS.includes(val)) {
           td.innerHTML = `<div class="warn-cell">
-            <span class="warn-tip" data-tip="This owner is not an active Vanta user"><svg class="warn-icon" width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#f59e0b" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+            <span class="warn-tip" data-tip="This owner is not an active Vanta user"><svg class="warn-icon" width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/></svg></span>
             ${val}</div>`;
         } else {
           td.textContent = val;
         }
-        if (tableEditable) td.onclick = e => { e.stopPropagation(); if (selectedRows.size > 0 && selectedRows.has(r.row)) { openOwnerDd(td, r); } else if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r.row, col.key))) { openOwnerDd(td, r); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.row, anchorCell.colKey, r.row, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r.row, col.key)]); anchorCell = { row: r.row, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
+        if (tableEditable) td.onclick = e => {
+          e.stopPropagation();
+          // Shift+click extends the cell range.
+          if (e.shiftKey && anchorCell) {
+            selectCellRange(anchorCell.uid, anchorCell.colKey, r._uid, col.key);
+            selectedRows = new Set(); selectedCols = new Set();
+            renderTable();
+            return;
+          }
+          // If this row is part of a multi-row checkbox selection, open the
+          // owner dropdown so changes apply to every selected row. Also mark
+          // this cell as the active selection so pressing Delete clears the
+          // cell value (handled before the row-delete branch) rather than
+          // removing the entire row.
+          if (selectedRows.size > 0 && selectedRows.has(r.row)) {
+            selectedCells = new Set([cellKey(r._uid, col.key)]);
+            anchorCell = { uid: r._uid, colKey: col.key };
+            activeCellCol = col.key; activeCellRow = r.row;
+            openOwnerDd(td, r);
+            return;
+          }
+          // No row selection: first click selects just this cell; a second
+          // click on the already-selected cell opens the owner dropdown.
+          const alreadySelected = selectedCells.size === 1 && selectedCells.has(cellKey(r._uid, col.key));
+          if (alreadySelected) { openOwnerDd(td, r); return; }
+          selectedCells = new Set([cellKey(r._uid, col.key)]);
+          anchorCell = { uid: r._uid, colKey: col.key };
+          selectedRows = new Set(); selectedCols = new Set();
+          activeCellCol = col.key; activeCellRow = r.row;
+          renderTable();
+        };
       } else if (Array.isArray(val)) {
         if (!isFramework) {
           const text = val.join(', ');
           td.textContent = text || '';
           if (!text) td.innerHTML = '<span class="cell-dash">—</span>';
-          const _textClickHandler = (e) => { e.stopPropagation(); if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r.row, col.key))) { startTextEdit(td, r, col.key); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.row, anchorCell.colKey, r.row, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r.row, col.key)]); anchorCell = { row: r.row, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
+          const _textClickHandler = (e) => { e.stopPropagation(); if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r._uid, col.key))) { startTextEdit(td, r, col.key); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.uid, anchorCell.colKey, r._uid, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r._uid, col.key)]); anchorCell = { uid: r._uid, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
           if (tableEditable) td.onclick = _textClickHandler;
         } else if (val.length === 0) {
           td.innerHTML = '<span class="cell-dash">—</span>';
@@ -3956,9 +4238,9 @@ function renderTable() {
             const tag = document.createElement('span');
             tag.className = 'cell-tag';
             if (isWarn) {
-              tag.innerHTML = `<span class="warn-tip"><svg class="warn-icon" width="12" height="12" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#f59e0b" stroke-width="1.3" stroke-linecap="round"/></svg></span> ${displayV} <span class="tag-x">×</span>`;
+              tag.innerHTML = `<span class="warn-tip"><svg class="warn-icon" width="12" height="12" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/></svg></span> ${displayV} <span class="tag-x">×</span>`;
             } else if (isNotFound) {
-              tag.innerHTML = `<span class="warn-tip" data-tip="Code not found."><svg class="warn-icon" width="12" height="12" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#f59e0b" stroke-width="1.3" stroke-linecap="round"/></svg></span> ${displayV} <span class="tag-x">×</span>`;
+              tag.innerHTML = `<span class="warn-tip" data-tip="Code not found."><svg class="warn-icon" width="12" height="12" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/></svg></span> ${displayV} <span class="tag-x">×</span>`;
             } else {
               tag.innerHTML = `${displayV} <span class="tag-x">×</span>`;
             }
@@ -3966,6 +4248,7 @@ function renderTable() {
               tag.querySelector('.tag-x').onclick = e => {
                 e.stopPropagation();
                 const arr = r[col.key]; arr.splice(arr.indexOf(v), 1);
+                triggerAutosave();
                 renderTable();
               };
             }
@@ -3973,37 +4256,55 @@ function renderTable() {
           });
           td.appendChild(wrap);
         }
-        if (tableEditable && isFramework) td.onclick = e => { e.stopPropagation(); if (e.target.classList.contains('tag-x')) return; if (selectedRows.size > 0 && selectedRows.has(r.row)) { openFrameworkDd(td, r, col.key); } else if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r.row, col.key))) { openFrameworkDd(td, r, col.key); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.row, anchorCell.colKey, r.row, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r.row, col.key)]); anchorCell = { row: r.row, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
+        if (tableEditable && isFramework) td.onclick = e => { e.stopPropagation(); if (e.target.classList.contains('tag-x')) return; if (selectedRows.size > 0 && selectedRows.has(r.row)) { openFrameworkDd(td, r, col.key); } else if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r._uid, col.key))) { openFrameworkDd(td, r, col.key); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.uid, anchorCell.colKey, r._uid, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r._uid, col.key)]); anchorCell = { uid: r._uid, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
       } else if ((r.ai && col.key === 'name') || (r.aiId && col.key === 'id')) {
         const meta = COL_META[col.key];
         const fmt = meta?.type === 'custom-field' ? meta.format : null;
         const fmtWarn = fmt && !isValidForFormat(val, fmt);
-        const warnIcon = `<span class="warn-tip"><svg class="warn-icon" width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#f59e0b" stroke-width="1.3" stroke-linecap="round"/></svg></span>`;
+        const _aiMm = cellMappingMismatch(col, val);
+        if (_aiMm) {
+          // Column was remapped to something that doesn't fit this value
+          // (e.g. control-name mapped to a framework). Surface the mismatch
+          // chip in place of the sparkle treatment so the user sees the
+          // error consistently across AI and non-AI rows. Keep the sparkle
+          // icon inside the chip so it's still clear this value was
+          // AI-generated.
+          const _aiSparkleSm = `<span class="cmc-sparkle" title="AI-generated" style="display:inline-flex;align-items:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M12 12L10.2344 12.6625C10.0938 12.7156 10 12.85 10 13C10 13.15 10.0938 13.2844 10.2344 13.3375L12 14L12.6625 15.7656C12.7156 15.9062 12.85 16 13 16C13.15 16 13.2844 15.9062 13.3375 15.7656L14 14L15.7656 13.3375C15.9062 13.2844 16 13.15 16 13C16 12.85 15.9062 12.7156 15.7656 12.6625L14 12L13.3375 10.2344C13.2844 10.0938 13.15 10 13 10C12.85 10 12.7156 10.0938 12.6625 10.2344L12 12Z" fill="#A555F2"/><path d="M10.2344 2.6625C10.0938 2.71562 10 2.85 10 3C10 3.15 10.0938 3.28438 10.2344 3.3375L12 4L12.6625 5.76562C12.7156 5.90625 12.85 6 13 6C13.15 6 13.2844 5.90625 13.3375 5.76562L14 4L15.7656 3.3375C15.9062 3.28438 16 3.15 16 3C16 2.85 15.9062 2.71562 15.7656 2.6625L14 2L13.3375 0.234375C13.2844 0.09375 13.15 0 13 0C12.85 0 12.7156 0.09375 12.6625 0.234375L12 2L10.2344 2.6625Z" fill="#ED72E3"/><path d="M6.40938 2.29063C6.32813 2.1125 6.15 2 5.95625 2C5.7625 2 5.58438 2.1125 5.50313 2.29063L3.85313 5.85313L0.290625 7.5C0.1125 7.58125 0 7.75938 0 7.95625C0 8.15313 0.1125 8.32813 0.290625 8.40938L3.85625 10.0562L5.5 13.6187C5.58125 13.7969 5.75937 13.9094 5.95312 13.9094C6.14687 13.9094 6.325 13.7969 6.40625 13.6187L8.05312 10.0531L11.6187 8.40625C11.7969 8.325 11.9094 8.14687 11.9094 7.95312C11.9094 7.75937 11.7969 7.58125 11.6187 7.5L8.05625 5.85625L6.40938 2.29063Z" fill="#771FCB"/></svg></span>`;
+          td.innerHTML = `<span class="cell-mismatch-chip" title="${escapeHtml(_aiMm.reason)}"><svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L13 12H1L7 1.5z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg><span class="cmc-text">${escapeHtml(String(val))}</span>${_aiSparkleSm}<span class="cmc-x" title="Clear value" data-clear="1">×</span></span>`;
+          if (String(val).length > 28) td.title = String(val);
+          if (tableEditable) td.onclick = (e) => { e.stopPropagation(); if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r._uid, col.key))) { startTextEdit(td, r, col.key); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.uid, anchorCell.colKey, r._uid, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r._uid, col.key)]); anchorCell = { uid: r._uid, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
+        } else {
+        const warnIcon = `<span class="warn-tip"><svg class="warn-icon" width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/></svg></span>`;
         td.innerHTML = `<div class="ai-sparkle">${fmtWarn ? warnIcon + ' ' : ''}${val} <span class="sparkle sparkle-tip" style="display:inline-flex;align-items:center;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12L10.2344 12.6625C10.0938 12.7156 10 12.85 10 13C10 13.15 10.0938 13.2844 10.2344 13.3375L12 14L12.6625 15.7656C12.7156 15.9062 12.85 16 13 16C13.15 16 13.2844 15.9062 13.3375 15.7656L14 14L15.7656 13.3375C15.9062 13.2844 16 13.15 16 13C16 12.85 15.9062 12.7156 15.7656 12.6625L14 12L13.3375 10.2344C13.2844 10.0938 13.15 10 13 10C12.85 10 12.7156 10.0938 12.6625 10.2344L12 12Z" fill="#A555F2"/><path d="M10.2344 2.6625C10.0938 2.71562 10 2.85 10 3C10 3.15 10.0938 3.28438 10.2344 3.3375L12 4L12.6625 5.76562C12.7156 5.90625 12.85 6 13 6C13.15 6 13.2844 5.90625 13.3375 5.76562L14 4L15.7656 3.3375C15.9062 3.28438 16 3.15 16 3C16 2.85 15.9062 2.71562 15.7656 2.6625L14 2L13.3375 0.234375C13.2844 0.09375 13.15 0 13 0C12.85 0 12.7156 0.09375 12.6625 0.234375L12 2L10.2344 2.6625Z" fill="#ED72E3"/><path d="M6.40938 2.29063C6.32813 2.1125 6.15 2 5.95625 2C5.7625 2 5.58438 2.1125 5.50313 2.29063L3.85313 5.85313L0.290625 7.5C0.1125 7.58125 0 7.75938 0 7.95625C0 8.15313 0.1125 8.32813 0.290625 8.40938L3.85625 10.0562L5.5 13.6187C5.58125 13.7969 5.75937 13.9094 5.95312 13.9094C6.14687 13.9094 6.325 13.7969 6.40625 13.6187L8.05312 10.0531L11.6187 8.40625C11.7969 8.325 11.9094 8.14687 11.9094 7.95312C11.9094 7.75937 11.7969 7.58125 11.6187 7.5L8.05625 5.85625L6.40938 2.29063Z" fill="#771FCB"/></svg></span></div>`;
         if (fmtWarn) td.title = `Value doesn't match format: ${fmt}`;
-        if (tableEditable) td.onclick = (e) => { e.stopPropagation(); if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r.row, col.key))) { startTextEdit(td, r, col.key); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.row, anchorCell.colKey, r.row, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r.row, col.key)]); anchorCell = { row: r.row, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
+        if (tableEditable) td.onclick = (e) => { e.stopPropagation(); if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r._uid, col.key))) { startTextEdit(td, r, col.key); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.uid, anchorCell.colKey, r._uid, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r._uid, col.key)]); anchorCell = { uid: r._uid, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
+        }
       } else if (!val) {
         if (col.required) {
-          td.innerHTML = `<span class="warn-tip" data-tip="Required field"><svg class="warn-icon" width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#f59e0b" stroke-width="1.3" stroke-linecap="round"/></svg></span>`;
+          td.innerHTML = `<span class="warn-tip" data-tip="Required field"><svg class="warn-icon" width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/></svg></span>`;
         } else {
           td.innerHTML = '<span class="cell-dash">—</span>';
         }
-        if (tableEditable && isText) td.onclick = (e) => { e.stopPropagation(); if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r.row, col.key))) { startTextEdit(td, r, col.key); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.row, anchorCell.colKey, r.row, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r.row, col.key)]); anchorCell = { row: r.row, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
-        if (tableEditable && isFramework) td.onclick = e => { e.stopPropagation(); if (e.target.classList.contains('tag-x')) return; if (selectedRows.size > 0 && selectedRows.has(r.row)) { openFrameworkDd(td, r, col.key); } else if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r.row, col.key))) { openFrameworkDd(td, r, col.key); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.row, anchorCell.colKey, r.row, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r.row, col.key)]); anchorCell = { row: r.row, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
+        if (tableEditable && isText) td.onclick = (e) => { e.stopPropagation(); if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r._uid, col.key))) { startTextEdit(td, r, col.key); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.uid, anchorCell.colKey, r._uid, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r._uid, col.key)]); anchorCell = { uid: r._uid, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
+        if (tableEditable && isFramework) td.onclick = e => { e.stopPropagation(); if (e.target.classList.contains('tag-x')) return; if (selectedRows.size > 0 && selectedRows.has(r.row)) { openFrameworkDd(td, r, col.key); } else if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r._uid, col.key))) { openFrameworkDd(td, r, col.key); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.uid, anchorCell.colKey, r._uid, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r._uid, col.key)]); anchorCell = { uid: r._uid, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
       } else {
         const meta = COL_META[col.key];
         const fmt = meta?.type === 'custom-field' ? meta.format : null;
         if (fmt && !isValidForFormat(val, fmt)) {
           td.innerHTML = `<div class="warn-cell">
-            <span class="warn-tip"><svg class="warn-icon" width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#f59e0b" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+            <span class="warn-tip"><svg class="warn-icon" width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/></svg></span>
             ${val}</div>`;
         } else if (col.key === 'id' && isActiveDuplicate(r)) {
-          td.innerHTML = `<div class="warn-cell"><span class="warn-tip" data-tip="Duplicate control"><svg class="warn-icon" width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#f59e0b" stroke-width="1.3" stroke-linecap="round"/></svg></span>${val}</div>`;
+          td.innerHTML = `<div class="warn-cell"><span class="warn-tip" data-tip="Duplicate control"><svg class="warn-icon" width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M7 1.5L13 12H1L7 1.5z" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/></svg></span>${val}</div>`;
+        } else if (cellMappingMismatch(col, val)) {
+          const _mm = cellMappingMismatch(col, val);
+          td.innerHTML = `<span class="cell-mismatch-chip" title="${escapeHtml(_mm.reason)}"><svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L13 12H1L7 1.5z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg><span class="cmc-text">${escapeHtml(String(val))}</span><span class="cmc-x" title="Clear value" data-clear="1">×</span></span>`;
+          if (String(val).length > 28) td.title = String(val);
         } else {
           td.textContent = val;
           if (val.length > 28) td.title = val;
         }
-        if (tableEditable && isText) td.onclick = (e) => { e.stopPropagation(); if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r.row, col.key))) { startTextEdit(td, r, col.key); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.row, anchorCell.colKey, r.row, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r.row, col.key)]); anchorCell = { row: r.row, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
+        if (tableEditable && isText) td.onclick = (e) => { e.stopPropagation(); if (!e.shiftKey && selectedCells.size === 1 && selectedCells.has(cellKey(r._uid, col.key))) { startTextEdit(td, r, col.key); } else if (e.shiftKey && anchorCell) { selectCellRange(anchorCell.uid, anchorCell.colKey, r._uid, col.key); selectedRows = new Set(); selectedCols = new Set(); renderTable(); } else { selectedCells = new Set([cellKey(r._uid, col.key)]); anchorCell = { uid: r._uid, colKey: col.key }; selectedRows = new Set(); selectedCols = new Set(); activeCellCol = col.key; activeCellRow = r.row; renderTable(); } };
       }
       // Flag any cell whose content includes a warn-icon so walkthrough mode can highlight just the erroring cells.
       if (td.querySelector('.warn-icon')) td.classList.add('cell-has-error');
@@ -4139,10 +4440,7 @@ function renderDropdown(colIdx) {
       <input class="md-search-input" id="md-search-input" type="text" placeholder="Search" oninput="mdFilterList(this.value)" autocomplete="off">
     </div>
     <div class="md-options" id="md-options-list">${listItemsHTML('')}</div>
-    ${settingsLink}
-    <div class="md-clear-row">
-      <button type="button" class="md-clear-btn" onclick="mdClearMapping()">Clear</button>
-    </div>`;
+    ${settingsLink}`;
 
   // Stash filter function so the input can call back into the right scope.
   dropdown._mdFilter = listItemsHTML;
@@ -4304,9 +4602,15 @@ function renderPlannerSteps(stepsId, activeIdx, visibleCount) {
   const knownRows = PLANNER_STEPS.slice(0, count).map((label, i) => {
     const icon = i < activeIdx ? doneIcon : i === activeIdx ? activeIcon : futureIcon;
     const isLocked = i === lastIdx;
-    return `<div class="ai-planner-step">
+    const isCurrent = i === activeIdx;
+    const textCls = [
+      'ai-planner-step-text',
+      isLocked ? 'locked' : '',
+      isCurrent ? 'current' : '',
+    ].filter(Boolean).join(' ');
+    return `<div class="ai-planner-step${isCurrent ? ' is-current' : ''}">
       <div class="ai-planner-step-icon">${icon}</div>
-      <span class="ai-planner-step-text${isLocked ? ' locked' : ''}">${label}</span>
+      <span class="${textCls}">${label}</span>
       ${isLocked ? `<div class="ai-planner-step-icon">${lockIcon}</div>` : ''}
     </div>`;
   });
@@ -4571,8 +4875,11 @@ async function generatePlanAndShowReview() {
 // 4. Drop the extracted controls card into chat
 // 5. Show the walk-through prompt
 async function finalizeAndShowExtractedControls() {
-  // Always close the canvas after mapping is confirmed.
-  collapseSheetPanel();
+  // Keep the canvas open if the user is mid-review there — they explicitly
+  // asked to stay in the spreadsheet. Otherwise default to collapsing it
+  // (e.g. when this flow is triggered from a chat-only path).
+  const _keepCanvasOpen = (typeof isSheetPanelOpen === 'function') && isSheetPanelOpen();
+  if (!_keepCanvasOpen) collapseSheetPanel();
 
   // Mark "Review column mappings" as done by advancing the planner to the
   // next step (Review AI-generated data). The user will only see the
@@ -4602,17 +4909,15 @@ async function finalizeAndShowExtractedControls() {
     liveMsg.innerHTML = `<p>Your controls are ready for review.</p>`;
   }
 
-  await addMessage(importCardReadyHTML(), 500);
-  const reviewPromptOpts = ['Continue to review AI-generated data', 'Something else'];
-  const showReviewPrompt = () => {
-    _promptLocked = false;
-    showPrompt('Ready to start reviewing?', reviewPromptOpts, async (idx) => {
-      _promptLocked = false; hidePrompt();
-      if (idx === 0) await doStep4();
-      else showSomethingElseFallback(showReviewPrompt);
-    });
-  };
-  showReviewPrompt();
+  await addMessage(`<div class="ai-msg">
+    <p>Here's what we need to review in order to finish your import:</p>
+    <ul style="margin:6px 0 0;padding-left:20px;line-height:1.6;">
+      <li>AI-generated data (control names and IDs)</li>
+      <li>Duplicate controls (2 sets)</li>
+      <li>Errors — unidentified owners and unfound framework codes</li>
+    </ul>
+  </div>`, 500);
+  await doStep4();
 }
 
 async function reviewAndEditMyself() {
@@ -5165,15 +5470,15 @@ const CUSTOM_FIELD_INFO = {
     name: 'Department',
     kind: 'Custom field',
     format: 'Text',
-    source: 'Detected from "Department" column',
-    desc: 'Free-text field for the organizational unit responsible for the control. Created automatically because no matching Vanta field was found.',
+    source: '',
+    desc: 'Free-text label for the organizational unit responsible for the control. Created custom field automatically because no matching Vanta field was found.',
   },
   risk: {
     name: 'Risk score',
     kind: 'Custom field',
     format: 'Number (0 decimals)',
-    source: 'Detected from "Risk score" column',
-    desc: 'Numeric value used to prioritize controls by risk. Created automatically because no matching Vanta field was found.',
+    source: '',
+    desc: 'Numeric value used to prioritize controls by risk. Created custom field automatically because no matching Vanta field was found.',
   },
   ism: {
     name: 'ISM',
@@ -5218,11 +5523,11 @@ function showInfoPopover(anchorEl, colKey, sticky) {
           <dt>Type</dt><dd>${info.kind}</dd>
           <dt>Format</dt><dd>${info.format}</dd>
         </dl>
-        <p class="ip-desc">${info.desc}</p>
+        <p class="ip-desc">${info.desc ? `<span class="ip-desc-sparkle" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M12 12L10.2344 12.6625C10.0938 12.7156 10 12.85 10 13C10 13.15 10.0938 13.2844 10.2344 13.3375L12 14L12.6625 15.7656C12.7156 15.9062 12.85 16 13 16C13.15 16 13.2844 15.9062 13.3375 15.7656L14 14L15.7656 13.3375C15.9062 13.2844 16 13.15 16 13C16 12.85 15.9062 12.7156 15.7656 12.6625L14 12L13.3375 10.2344C13.2844 10.0938 13.15 10 13 10C12.85 10 12.7156 10.0938 12.6625 10.2344L12 12Z" fill="#A555F2"/><path d="M10.2344 2.6625C10.0938 2.71562 10 2.85 10 3C10 3.15 10.0938 3.28438 10.2344 3.3375L12 4L12.6625 5.76562C12.7156 5.90625 12.85 6 13 6C13.15 6 13.2844 5.90625 13.3375 5.76562L14 4L15.7656 3.3375C15.9062 3.28438 16 3.15 16 3C16 2.85 15.9062 2.71562 15.7656 2.6625L14 2L13.3375 0.234375C13.2844 0.09375 13.15 0 13 0C12.85 0 12.7156 0.09375 12.6625 0.234375L12 2L10.2344 2.6625Z" fill="#ED72E3"/><path d="M6.40938 2.29063C6.32813 2.1125 6.15 2 5.95625 2C5.7625 2 5.58438 2.1125 5.50313 2.29063L3.85313 5.85313L0.290625 7.5C0.1125 7.58125 0 7.75938 0 7.95625C0 8.15313 0.1125 8.32813 0.290625 8.40938L3.85625 10.0562L5.5 13.6187C5.58125 13.7969 5.75937 13.9094 5.95312 13.9094C6.14687 13.9094 6.325 13.7969 6.40625 13.6187L8.05312 10.0531L11.6187 8.40625C11.7969 8.325 11.9094 8.14687 11.9094 7.95312C11.9094 7.75937 11.7969 7.58125 11.6187 7.5L8.05625 5.85625L6.40938 2.29063Z" fill="#771FCB"/></svg></span>` : ''}${info.desc}</p>
       </div>
       <div class="ip-foot">
         <span class="ip-source">${info.source}</span>
-        <a class="ip-link" data-edit-custom="${colKey}" href="#">Edit in settings ${arrow}</a>
+        <a class="ip-link" data-edit-custom="${colKey}" href="#">${colKey === 'ism' ? 'Edit in Frameworks' : 'Edit in settings'} ${arrow}</a>
       </div>`;
 
     _infoPopover.querySelector('.ip-link').addEventListener('click', (e) => {
@@ -5328,34 +5633,44 @@ function updateFilterPill(visibleCount, reviewCount) {
   // we only fill in the pill content and toggle its visibility within the bar.
   let text = null;
   let countText = null;
+  // Pill color: yellow while reviewing duplicates or per-row errors; purple
+  // (default) while reviewing AI-generated data.
+  let warn = false;
   if (walkthroughFocus === 'ai') {
     text = walkthroughItemLabel
       ? `AI-generated data · ${walkthroughItemLabel}`
       : 'AI-generated data';
     countText = visibleCount;
   } else if (walkthroughFocus === 'dup-nsm') {
-    text = 'Possible duplicates';
+    text = 'Duplicates';
     countText = visibleCount;
+    warn = true;
   } else if (walkthroughFocus === 'dup-all') {
     text = 'Duplicate controls';
     countText = visibleCount;
+    warn = true;
   } else if (walkthroughFocus === 'dup-des') {
-    text = 'Possible duplicates';
+    text = 'Duplicates';
     countText = visibleCount;
+    warn = true;
   } else if (walkthroughFocus === 'unidentified-owners') {
     text = walkthroughItemLabel
       ? `Unidentified owner · ${walkthroughItemLabel}`
       : 'Unidentified owners';
     countText = visibleCount;
+    warn = true;
   } else if (walkthroughFocus === 'unfound-codes') {
     text = walkthroughItemLabel
       ? `Unfound framework code · ${walkthroughItemLabel}`
       : 'Unfound framework codes';
     countText = visibleCount;
+    warn = true;
   } else if (activeTab === 'review') {
     text = 'Pending review';
     countText = visibleCount;
+    warn = true;
   }
+  pill.classList.toggle('sp-filter-pill--warn', warn);
   if (text) {
     label.textContent = text;
     if (countText != null && countText !== '') {
@@ -5449,13 +5764,13 @@ function importCardReadyHTML() {
       tone: 'warn',
       title: '2 sets of duplicate controls',
       meta: 'Data Encryption Standards (rows 109–110), Network Security Monitoring (rows 11, 107–108)',
-      icon: `<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L13 12H1L7 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10.2v.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`,
+      icon: `<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L13 12H1L7 1.5z" fill="currentColor" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10.2v.3" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/></svg>`,
     },
     {
       tone: 'warn',
       title: '2 unidentified owners',
       meta: 'Michael Chen and Lisa Burns are not in Vanta',
-      icon: `<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L13 12H1L7 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10.2v.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`,
+      icon: `<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L13 12H1L7 1.5z" fill="currentColor" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10.2v.3" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/></svg>`,
     },
   ];
   const rowsHtml = summaryItems.map(it => `
@@ -5471,7 +5786,7 @@ function importCardReadyHTML() {
       <div class="import-card-file-icon">${_listIcon}</div>
       <div class="import-card-info">
         <div class="import-card-title">Extracted controls</div>
-        <div class="import-card-sub">${count} controls · ${summaryItems.length} items to review</div>
+        <div class="import-card-sub">${count} controls · 12 items to review</div>
       </div>
     </div>
     <div class="ec-card-summary-list">${rowsHtml}</div>
@@ -5604,23 +5919,39 @@ let _mappingReviewPrevPanel = null; // 'inner' or 'cf' or null
 function openMappingReview() {
   _mappingReviewOpen = true;
   revealSheetPanel();
-  // Remember what was showing so we can restore on close.
+  // Show the spreadsheet view with column-mapping affordances (the
+  // "Edit mapping" dropdown buttons live in each header column). The
+  // dedicated review screen has been retired in favor of editing in-place.
   const spInner = document.querySelector('.sp-inner');
   const cfEl = document.getElementById('sp-configure-framework');
+  const mr = document.getElementById('sp-mapping-review');
   if (cfEl && cfEl.style.display === 'flex') _mappingReviewPrevPanel = 'cf';
   else _mappingReviewPrevPanel = 'inner';
-  if (spInner) spInner.style.display = 'none';
   if (cfEl) cfEl.style.display = 'none';
-  const mr = document.getElementById('sp-mapping-review');
-  mr.style.display = 'flex';
-  renderMappingReview();
+  if (mr) mr.style.display = 'none';
+  if (spInner) spInner.style.display = 'flex';
+  // Hide the filter tabs and put the head into the column-mapping treatment
+  // so the "Edit mapping" caret affordance is prominent on every column.
+  const tabs = document.getElementById('sp-tabs');
+  if (tabs) tabs.style.display = 'none';
+  const sptable = document.getElementById('sptable');
+  const sptableHead = document.getElementById('sptable-head');
+  if (sptable) sptable.classList.remove('mapping-confirmed');
+  if (sptableHead) {
+    sptableHead.classList.remove('mapping-confirmed');
+    sptableHead.classList.add('col-mapping-active');
+  }
+  if (sptable) sptable.classList.add('col-mapping-active');
+  tableEditable = true;
+  if (typeof renderTable === 'function') renderTable();
 }
 
 function closeMappingReview() {
   _mappingReviewOpen = false;
   // Always close any open mapping-dropdown that was anchored to a row.
   if (typeof openDropdownCol !== 'undefined' && openDropdownCol !== null) closeDropdown();
-  document.getElementById('sp-mapping-review').style.display = 'none';
+  const mr = document.getElementById('sp-mapping-review');
+  if (mr) mr.style.display = 'none';
   // Restore the underlying sp-inner so the canvas is in a good state if it
   // reopens, but actually collapse the whole canvas — clicking X anywhere
   // on the canvas should close the canvas.
@@ -5793,7 +6124,7 @@ async function showMappingConfirmStep() {
       hidePrompt(); _promptLocked = false;
       resolve();
     };
-    const mappingPromptOpts = ['Confirm and continue to next step', 'Something else'];
+    const mappingPromptOpts = ['Confirm and continue to next step'];
     const showMappingPrompt = () => {
       _promptLocked = false;
       showPrompt(
@@ -5940,7 +6271,7 @@ function setCfChatCardState(state) {
 
 // ── FOCUS CARDS (in-chat resolution cards for AI / duplicates / mapping) ──
 const _sparkleSvg = `<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1.5l.92 2.58L9.5 5l-2.58.92L6 8.5l-.92-2.58L2.5 5l2.58-.92L6 1.5z" fill="currentColor"/><path d="M9.5 7.5l.4 1.1 1.1.4-1.1.4-.4 1.1-.4-1.1-1.1-.4 1.1-.4.4-1.1z" fill="currentColor"/></svg>`;
-const _warnSvg = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L13 12H1L7 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10.2v.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`;
+const _warnSvg = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L13 12H1L7 1.5z" fill="currentColor" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 5.5v3M7 10.2v.3" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/></svg>`;
 const _checkSvg = `<svg width="12" height="12" fill="none" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg>`;
 const _reviewArrowSvg = `<svg width="11" height="11" fill="none" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h6M6 3l3 3-3 3"/></svg>`;
 
@@ -6225,44 +6556,29 @@ function reviewAllDuplicatesInCanvas() {
 async function continueWalkthroughAfterAi() {
   setPlannerActiveStep(2); // Review duplicate controls
 
-  // Show the overview first
-  await addMessage(`<div class="ai-msg">
-    <p>Next, we found <strong>2 sets of duplicate controls</strong>. You can walk through them one at a time, or have me consolidate all of them automatically.</p>
-  </div>`, 200);
+  // If everything's been resolved already (rows removed in canvas), skip.
+  const active = RAW_DATA.filter(r => !removedRows.has(r.row));
+  const remainingDupSets = new Set();
+  active.forEach(r => {
+    if (r.duplicate && active.some(o => o.row !== r.row && o.duplicate && o.id === r.id)) {
+      remainingDupSets.add(r.id);
+    }
+  });
+  if (remainingDupSets.size === 0) {
+    await addMessage(`<div class="ai-msg"><p>Looks like you already resolved the duplicates. Moving on.</p></div>`, 150);
+    setTimeout(() => continueWalkthroughAfterDup(), 300);
+    return;
+  }
 
-  const dupSets = [
-    { id: 'des', controlName: 'Data Encryption Standards', rows: [109, 110] },
-    { id: 'nsm', controlName: 'Network Security Monitoring', rows: [11, 107, 108] },
-  ];
-  await addMessage(dupOverviewCardHTML({ id: 'dup-overview-card', sets: dupSets }), 200);
-  // Mirror "Review" on the duplicate overview card: if the canvas is open,
-  // update its filter to show all duplicate controls.
+  // Filter the canvas (if open) to all duplicate rows.
   if (isSheetPanelOpen()) {
     walkthroughFocus = 'dup-all';
     dupHighlightRows = new Set([109, 110, 11, 107, 108]);
     renderTable();
   }
 
-  const dupOverviewOpts = [
-    'Walk me through these',
-    'Consolidate all duplicate controls for me',
-    'Something else'
-  ];
-  const showDupOverviewPrompt = () => {
-    _promptLocked = false;
-    showPrompt('How would you like to handle these?', dupOverviewOpts, async (idx) => {
-      _promptLocked = false; hidePrompt();
-      if (idx === 0) {
-        markFocusCardResolved('dup-overview-card', "Walking through 2 sets");
-        await startDuplicateWalkthrough();
-      } else if (idx === 1) {
-        await previewConsolidateAllDuplicates(dupSets);
-      } else {
-        showSomethingElseFallback(showDupOverviewPrompt);
-      }
-    });
-  };
-  showDupOverviewPrompt();
+  // Skip the overview card and prompt — go straight to the first set.
+  await startDuplicateWalkthrough();
 }
 
 // Preview what auto-consolidation will do, then ask user to confirm before
@@ -6308,7 +6624,7 @@ async function previewConsolidateAllDuplicates(dupSets) {
 
   const showApplyPrompt = () => {
     _promptLocked = false;
-    showPrompt('Apply these changes?', ['Confirm changes', 'Something else'], async (idx) => {
+    showPrompt('Apply these changes?', ['Confirm changes'], async (idx) => {
       _promptLocked = false; hidePrompt();
       if (idx === 0) {
         let removedCount = 0;
@@ -6338,12 +6654,11 @@ async function previewConsolidateAllDuplicates(dupSets) {
 async function startDuplicateWalkthrough() {
   applyStepFocusIfOpen('dup-des');
   await addMessage(`<div class="ai-msg">
-    <p>Let's start with duplicate controls for <strong>Data Encryption Standards</strong> (rows 109–110).</p>
+    <p>Next, we found <strong>2 sets of duplicate controls</strong>. We will walk you through each group of duplicates to review. If you want me to skip review and have me merge them for you, you can tell me to do that.</p>
   </div>`, 100);
   const dupOptions = [
     'Keep all (assign unique IDs)',
-    'Consolidate into one',
-    'Something else'
+    'Consolidate into one'
   ];
   const cardHtml = dupFocusCardHTML({
     id: 'dup-focus-card-des',
@@ -6372,8 +6687,7 @@ async function continueWalkthroughAfterDesDup() {
   </div>`, 100);
   const dupOptions = [
     'Keep all (assign unique IDs)',
-    'Consolidate into one',
-    'Something else'
+    'Consolidate into one'
   ];
   const cardHtml = dupFocusCardHTML({
     id: 'dup-focus-card',
@@ -6438,10 +6752,14 @@ function getUnfoundCodeItems() {
 }
 
 function rowsToUnidentifiedOwners() {
+  // Use the unique `_uid` (not `r.row`) so duplicated row numbers don't pull
+  // unrelated rows into the filter (e.g. row 107 appears twice in RAW_DATA —
+  // a filler "Business Continuity Plan" row and the NSM duplicate — and we
+  // only want the unidentified-owner one).
   return new Set(
     RAW_DATA
       .filter(r => !removedRows.has(r.row) && r.owner && UNIDENTIFIED_OWNERS.includes(r.owner))
-      .map(r => r.row)
+      .map(r => r._uid)
   );
 }
 
@@ -6459,7 +6777,10 @@ function rowsToUnfoundCodes() {
 }
 
 function errorCategoryCardHTML({ id, title, sub, kind, items }) {
-  const itemsHtml = items.map(it => {
+  const MAX_ITEMS = 5;
+  const visibleItems = items.slice(0, MAX_ITEMS);
+  const overflow = Math.max(0, items.length - MAX_ITEMS);
+  const itemsHtml = visibleItems.map(it => {
     const left = it.name || it.code;
     const meta = it.framework ? FW_LABEL[it.framework] : '';
     const nameClass = it.framework ? '' : ' is-text';
@@ -6469,7 +6790,9 @@ function errorCategoryCardHTML({ id, title, sub, kind, items }) {
       ${meta ? `<div class="fc-err-meta">${escapeHtml(meta)}</div>` : '<div></div>'}
       <div class="fc-err-rows">${it.rows.length} row${it.rows.length === 1 ? '' : 's'} · ${escapeHtml(rowsShort)}</div>
     </div>`;
-  }).join('');
+  }).join('') + (overflow > 0
+    ? `<div class="focus-card-row focus-card-row--more">+${overflow} more</div>`
+    : '');
   const focus = kind === 'owners' ? 'unidentified-owners' : 'unfound-codes';
   return `<div class="focus-card" id="${id}" data-err-kind="${kind}">
     <div class="focus-card-header">
@@ -6549,11 +6872,31 @@ function promptForOwnerCategory(items, cardId) {
   const showOwnerCategoryPrompt = () => {
     _promptLocked = false;
     showPrompt('How would you like to address these?',
-      ['Walk through each item', 'Remove all unidentified owners', 'Something else'],
+      ['Walk through each item', 'Remove all unidentified owners'],
       async (idx) => {
         _promptLocked = false; hidePrompt();
         if (idx === 0) {
-          await walkthroughOwners(items, 0, cardId);
+          // If all unidentified owners were already resolved in the canvas
+          // (renamed, cleared, or rows removed), skip the per-owner walkthrough
+          // and go straight to the next category.
+          const remaining = getUnidentifiedOwnerItems();
+          if (!remaining.length) {
+            markFocusCardResolved(cardId, 'Resolved in spreadsheet');
+            await addMessage(`<div class="ai-msg"><p>Looks like you already replaced the unidentified owners. Moving on.</p></div>`, 150);
+            setTimeout(() => doCodeErrorCategory(), 300);
+            return;
+          }
+          // When the canvas is open, the user is reviewing inline — skip the
+          // per-owner walkthrough (which would step the user through each
+          // unidentified owner one at a time) and continue to the next step.
+          // The user can still go back and edit in the canvas if needed.
+          if (typeof isSheetPanelOpen === 'function' && isSheetPanelOpen()) {
+            markFocusCardResolved(cardId, 'Reviewed');
+            await addMessage(`<div class="ai-msg"><p>Moving on. You can come back to any unidentified owner from the spreadsheet later.</p></div>`, 150);
+            setTimeout(() => doCodeErrorCategory(), 300);
+            return;
+          }
+          await walkthroughOwners(remaining, 0, cardId);
         } else if (idx === 1) {
           // Remove all: blank the owner on every affected row.
           const totalRows = items.reduce((n, it) => n + it.rows.length, 0);
@@ -6589,6 +6932,10 @@ async function walkthroughOwners(items, i, parentCardId) {
   walkthroughItemRows = new Set(item.rows);
   walkthroughItemLabel = item.name;
   walkthroughItemOwner = item.name;
+  // Re-establish the step focus in case the user dismissed the filter pill
+  // on the previous item — without this, the canvas would render unfiltered
+  // when advancing via "Save and continue".
+  walkthroughFocus = 'unidentified-owners';
   if (isSheetPanelOpen()) renderTable();
   const suggested = ALL_OWNERS.find(o => !UNIDENTIFIED_OWNERS.includes(o)) || 'Sarah Johnson';
   const cardId = `err-owner-item-${i}`;
@@ -6602,12 +6949,21 @@ async function walkthroughOwners(items, i, parentCardId) {
   }), 150);
   const ownerItemOpts = [
     'Reassign',
-    'Remove owner from these cells',
-    'Something else'
+    'Remove owner from these cells'
   ];
   const showOwnerItemPrompt = () => {
     _promptLocked = false;
+    // Expose a skip handler so the canvas-open "Save and continue" can bypass
+    // this prompt entirely, log a "circle back later" message in the chat,
+    // and advance to the next owner.
+    _ownerWalkthroughSkip = async () => {
+      _ownerWalkthroughSkip = null;
+      await addMessage(`<div class="ai-msg"><p><strong>${escapeHtml(item.name)}</strong> is not found in the system. We can come back to that one later.</p></div>`, 100);
+      markFocusCardResolved(cardId, 'Skipped — circle back later');
+      setTimeout(() => walkthroughOwners(items, i + 1, parentCardId), 300);
+    };
     showPrompt(`What would you like to do with rows owned by ${item.name}?`, ownerItemOpts, async (idx) => {
+      _ownerWalkthroughSkip = null;
       _promptLocked = false; hidePrompt();
       if (idx === 2) {
         showSomethingElseFallback(showOwnerItemPrompt);
@@ -6692,11 +7048,27 @@ function promptForCodeCategory(items, cardId) {
   const showCodeCategoryPrompt = () => {
     _promptLocked = false;
     showPrompt('How would you like to address these?',
-      ['Walk through each item', 'Remove all unfound framework codes', 'Something else'],
+      ['Walk through each item', 'Remove all unfound framework codes'],
       async (idx) => {
         _promptLocked = false; hidePrompt();
         if (idx === 0) {
-          await walkthroughCodes(items, 0, cardId);
+          // If everything's been resolved in the canvas already, skip.
+          const remaining = getUnfoundCodeItems();
+          if (!remaining.length) {
+            markFocusCardResolved(cardId, 'Resolved in spreadsheet');
+            await addMessage(`<div class="ai-msg"><p>Looks like you already resolved the unfound codes. Moving on.</p></div>`, 150);
+            setTimeout(() => finishErrorReview(), 300);
+            return;
+          }
+          // Canvas open → skip the per-code walkthrough entirely. The user
+          // can come back to any code from the spreadsheet later.
+          if (typeof isSheetPanelOpen === 'function' && isSheetPanelOpen()) {
+            markFocusCardResolved(cardId, 'Reviewed');
+            await addMessage(`<div class="ai-msg"><p>Moving on. You can come back to any unfound code from the spreadsheet later.</p></div>`, 150);
+            setTimeout(() => finishErrorReview(), 300);
+            return;
+          }
+          await walkthroughCodes(remaining, 0, cardId);
         } else if (idx === 1) {
           // Remove all: strip every unfound code from every framework array
           // on every affected row.
@@ -6742,6 +7114,10 @@ async function walkthroughCodes(items, i, parentCardId) {
   walkthroughItemLabel = item.code;
   walkthroughItemCode = item.code;
   walkthroughItemFramework = item.framework;
+  // Re-establish the step focus in case the user dismissed the filter pill
+  // on the previous code — otherwise the canvas renders unfiltered when
+  // advancing via "Save and continue".
+  walkthroughFocus = 'unfound-codes';
   if (isSheetPanelOpen()) renderTable();
   const cardId = `err-code-item-${i}`;
   const fwLabel = FW_LABEL[item.framework] || item.framework;
@@ -6758,8 +7134,7 @@ async function walkthroughCodes(items, i, parentCardId) {
   const codeItemOpts = [];
   if (suggestion) codeItemOpts.push(`Replace with ${suggestion}`);
   codeItemOpts.push('Remove this code from import');
-  codeItemOpts.push('Something else');
-  const editIdx = codeItemOpts.length - 1;
+  const editIdx = -1; // "Something else" option removed
   const showCodeItemPrompt = () => {
     _promptLocked = false;
     showPrompt(`What would you like to do with ${item.code}?`, codeItemOpts, async (idx) => {
@@ -7159,8 +7534,8 @@ document.addEventListener('keydown', function(e) {
       if (selectedCells.size > 0) {
         e.preventDefault();
         selectedCells.forEach(key => {
-          const [rowStr, colKey] = key.split(':');
-          const row = RAW_DATA.find(r => r.row === parseInt(rowStr));
+          const [uidStr, colKey] = key.split(':');
+          const row = RAW_DATA.find(r => r._uid === parseInt(uidStr));
           if (!row) return;
           row[colKey] = Array.isArray(row[colKey]) ? [] : '';
           if (colKey === 'name') row.ai = false;
@@ -7303,6 +7678,7 @@ async function doStep1() {
   setPlannerActiveStep(0); // Review column mappings
   document.getElementById('sp-tabs').style.display = 'none';
   document.getElementById('sptable-head').classList.add('col-mapping-active');
+  document.getElementById('sptable').classList.add('col-mapping-active');
   // Keep cells readable + editable during column-mapping review
   tableEditable = true;
   renderTable();
@@ -7315,12 +7691,12 @@ async function doStep1() {
 
   snapState(() => showPrompt(
     "Let us know when you're done reviewing column mappings",
-    ['Confirm and continue', 'Something else'],
+    ['Confirm and continue'],
     (idx) => { if (idx === 0) doStep4(); }
   ));
   showPrompt(
     "Let us know when you're done reviewing column mappings",
-    ['Confirm and continue', 'Something else'],
+    ['Confirm and continue'],
     (idx) => { if (idx === 0) doStep4(); }
   );
 }
@@ -7456,6 +7832,8 @@ async function doStep4() {
   document.getElementById('sp-tabs').style.display = 'flex';
   document.getElementById('sptable').classList.add('mapping-confirmed');
   document.getElementById('sptable-head').classList.add('mapping-confirmed');
+  document.getElementById('sptable').classList.remove('col-mapping-active');
+  document.getElementById('sptable-head').classList.remove('col-mapping-active');
   switchTab('review');
   renderTable();
 
@@ -7503,7 +7881,7 @@ async function startAiWalkthrough() {
     <p>Let's start with the AI-generated data. You can confirm or remove the generated values right here, or open the spreadsheet to edit each one row-by-row.</p>
   </div>`, 100);
   await addMessage(aiFocusCardHTML({ id: 'ai-focus-card' }), 200);
-  const aiStartOpts = ['Confirm all', 'Remove all', 'Something else'];
+  const aiStartOpts = ['Confirm all and continue', 'Remove all and continue'];
   const showAiStartPrompt = () => {
     _promptLocked = false;
     showPrompt('Confirm AI-generated data?', aiStartOpts, async (idx) => {
@@ -7570,7 +7948,7 @@ async function walkthroughAiItems(items, i, parentCardId) {
 
   await addMessage(itemCardHtml, 150);
 
-  const aiItemOpts = ['Confirm', 'Remove', 'Something else'];
+  const aiItemOpts = ['Confirm', 'Remove'];
   const showAiItemPrompt = () => {
     _promptLocked = false;
     // Hook: starting a direct edit in the sheet swaps to the "done editing"
@@ -7579,7 +7957,7 @@ async function walkthroughAiItems(items, i, parentCardId) {
       _walkthroughOnEditStart = null;
       _promptLocked = false; hidePrompt();
       _promptLocked = false;
-      showPrompt("Let me know when you're done editing", ['Done, continue to next item', 'Something else'], async (idx) => {
+      showPrompt("Let me know when you're done editing", ['Save and continue'], async (idx) => {
         _promptLocked = false; hidePrompt();
         if (idx === 0) {
           // Clear AI flags on this row — the user resolved it via direct edit.
@@ -7676,7 +8054,7 @@ async function doFinal() {
   _promptLocked = false;
   showPrompt(
     'Ready to import?',
-    [`Import ${finalCount} controls`, 'Continue editing'],
+    ['Import controls', 'Continue editing'],
     async (idx) => {
       _promptLocked = false; hidePrompt();
       if (idx === 0) {
@@ -7764,6 +8142,7 @@ function launchConfetti() {
 function collapseSheetPanel() {
   document.getElementById('sheet-panel').classList.add('sp-hidden');
   document.getElementById('screen-sbs').classList.add('chat-full');
+  document.body.classList.remove('canvas-open');
   // Restore chat input placeholder now that the canvas is hidden
   const chatInput = document.getElementById('chat-input');
   if (chatInput && !chatInput.dataset.customPlaceholder) {
@@ -7800,6 +8179,7 @@ function collapseSheetPanel() {
 function revealSheetPanel() {
   document.getElementById('screen-sbs').classList.remove('chat-full');
   document.getElementById('sheet-panel').classList.remove('sp-hidden');
+  document.body.classList.add('canvas-open');
   // Whenever the canvas opens, collapse the Extracted controls chat card and
   // the Custom framework chat card (if present) to their grey "Canvas is open"
   // state. The cards are restored to their prior state by collapseSheetPanel
@@ -7810,6 +8190,15 @@ function revealSheetPanel() {
   if (document.getElementById('cf-chat-card')) {
     setCfChatCardState('open');
   }
+  // Whenever the canvas opens (from any Review button or chat action),
+  // reset the horizontal scroll so the first column is visible. Use rAF so
+  // the layout has finished after the width transition.
+  requestAnimationFrame(() => {
+    const wrap = document.getElementById('sp-table-wrap');
+    const head = document.getElementById('sp-thead-wrap');
+    if (wrap) wrap.scrollLeft = 0;
+    if (head) head.scrollLeft = 0;
+  });
   // Update chat input placeholder to nudge edit-by-prompt while canvas is open
   const chatInput = document.getElementById('chat-input');
   if (chatInput && !chatInput.dataset.customPlaceholder) {
@@ -8002,7 +8391,7 @@ async function simulateUpload() {
           _promptLocked = false;
           showPrompt(
             'What would you like to do?',
-            ['Save and continue', 'Something else'],
+            ['Save and continue'],
             async (j) => {
               _promptLocked = false; hidePrompt();
               if (j === 0) {
@@ -8068,6 +8457,7 @@ async function simulateUpload() {
 function closeSheetPanel() {
   document.getElementById('screen-sbs').classList.add('chat-full');
   document.getElementById('sheet-panel').classList.add('sp-hidden');
+  document.body.classList.remove('canvas-open');
   const ecCard = document.getElementById('ec-chat-card');
   const prior = ecCard?.getAttribute('data-prior-state');
   if (prior) setEcChatCardState(prior);
@@ -8264,6 +8654,11 @@ function confirmImportModal() {
 // "Let me know when you're done reviewing." prompt so the user finishes
 // in the canvas before continuing the chat-driven flow.
 let _pendingRealPrompt = null;
+// Optional override: when set (by an active walkthrough), the canvas-open
+// "Save and continue" button calls this function instead of firing the
+// pending real prompt's first option. Used so users can skip the per-owner
+// "Reassign / Remove" choice and move on.
+let _ownerWalkthroughSkip = null;
 const _origShowPrompt = showPrompt;
 const _origRevealSheetPanel = revealSheetPanel;
 const _origCollapseSheetPanel = collapseSheetPanel;
@@ -8296,30 +8691,18 @@ function _unresolvedForCurrentStep() {
 function _showCanvasOpenPrompt() {
   _origShowPrompt(
     "Let me know when you're done reviewing.",
-    ['Done, continue', 'Something else'],
+    ['Save and continue'],
     async (idx) => {
       if (idx === 0) {
         _promptLocked = false; hidePrompt();
-        // Block advance if there are still unresolved errors/duplicates for
-        // the current step.
-        const u = _unresolvedForCurrentStep();
-        if (u.count > 0) {
-          _origShowPrompt(
-            `You still have <strong>${u.count} ${u.label}</strong> to resolve before importing.`,
-            ['Skip for now', 'Something else'],
-            async (i2) => {
-              _promptLocked = false; hidePrompt();
-              if (i2 === 0) {
-                // Skip — advance the flow anyway.
-                const saved = _pendingRealPrompt;
-                _pendingRealPrompt = null;
-                if (saved && saved.onSelect) await saved.onSelect(0);
-              } else {
-                // "Something else" — restore the canvas-open prompt.
-                _showCanvasOpenPrompt();
-              }
-            }
-          );
+        // If we're inside the per-owner walkthrough, skip-with-message
+        // instead of firing the prompt's first option (which would start a
+        // Reassign flow).
+        if (typeof _ownerWalkthroughSkip === 'function') {
+          const skip = _ownerWalkthroughSkip;
+          _ownerWalkthroughSkip = null;
+          _pendingRealPrompt = null;
+          await skip();
           return;
         }
         // Fire the original prompt's first option (typically "continue" /
@@ -8374,6 +8757,32 @@ collapseSheetPanel = function() {
     showPrompt(saved.question, saved.options, saved.onSelect);
   }
 };
+
+
+// Delegated handler: clear cell value when user clicks the × on a mismatch chip.
+document.getElementById('sptable-body').addEventListener('click', (e) => {
+  const x = e.target.closest('.cmc-x');
+  if (!x) return;
+  e.stopPropagation();
+  const td = x.closest('td[data-col-key]');
+  if (!td) return;
+  const colKey = td.dataset.colKey;
+  const tr = td.closest('tr');
+  const tbody = tr.parentElement;
+  const rowIdx = Array.from(tbody.children).indexOf(tr);
+  // Pull the matching RAW_DATA row from the visible row list. The simplest
+  // reliable lookup: walk RAW_DATA for the row number matching the rendered
+  // `Row N` text in the first cell.
+  const numCell = tr.querySelector('td:first-child');
+  // Fall back to closest match by walking RAW_DATA in display order.
+  const visibleRows = RAW_DATA.filter(r => !removedRows.has(r.row));
+  const r = visibleRows[rowIdx];
+  if (!r) return;
+  r[colKey] = '';
+  if (colKey === 'name') r.ai = false;
+  if (colKey === 'id')   r.aiId = false;
+  renderTable();
+});
 
 // ── INIT ──────────────────────────────────────────────
 renderTable();
@@ -8453,21 +8862,37 @@ renderPlannerSteps('cp-planner-steps', 0);
 
 <div id="tweaks-panel" aria-label="Tweaks panel">
   <div class="tp-head">
-    <span class="tp-title">Tweaks</span>
+    <span class="tp-title">Jump to step</span>
     <button class="tp-close" onclick="_dismissTweaksPanel()" title="Close">×</button>
   </div>
-  <div class="tp-section">Jump to step</div>
-  <button class="tp-btn" onclick="_jump('upload')">1. Upload screen</button>
-  <button class="tp-btn" onclick="_jump('processing')">2. Processing / ISM question</button>
-  <button class="tp-btn" onclick="_jump('ready')">3. Plan generated — review</button>
-  <button class="tp-btn" onclick="_jump('mapping')">4. Column mappings</button>
-  <button class="tp-btn" onclick="_jump('ai')">5. AI-generated names</button>
-  <button class="tp-btn" onclick="_jump('dup-des')">6. Duplicate · Data Encryption</button>
-  <button class="tp-btn" onclick="_jump('dup-nsm')">7. Duplicate · Network Security</button>
-  <button class="tp-btn" onclick="_jump('owners')">8. Unidentified owners</button>
-  <button class="tp-btn" onclick="_jump('codes')">9. Unfound framework codes</button>
-  <button class="tp-btn" onclick="_jump('import')">10. Ready to import</button>
-  <button class="tp-btn" onclick="_jump('done')">11. Imported / done</button>
+
+  <div class="tp-section">Before the plan</div>
+  <button class="tp-btn" onclick="_jump('upload')">Upload screen</button>
+  <button class="tp-btn" onclick="_jump('processing')">Processing / ISM question</button>
+  <button class="tp-btn" onclick="_jump('ready')">Plan generated</button>
+
+  <div class="tp-section">Plan steps</div>
+
+  <div class="tp-step"><span class="tp-step-num">1</span> Review column mappings</div>
+  <button class="tp-btn tp-btn--sub" onclick="_jump('mapping')">Open mapping review</button>
+
+  <div class="tp-step"><span class="tp-step-num">2</span> Review AI-generated data</div>
+  <button class="tp-btn tp-btn--sub" onclick="_jump('ai')">AI-generated names/Ids</button>
+
+  <div class="tp-step"><span class="tp-step-num">3</span> Review duplicate controls</div>
+  <button class="tp-btn tp-btn--sub" onclick="_jump('dup-des')">Data Encryption Standards</button>
+  <button class="tp-btn tp-btn--sub" onclick="_jump('dup-nsm')">Network Security Monitoring</button>
+
+  <div class="tp-step"><span class="tp-step-num">4</span> Review and fix errors</div>
+  <button class="tp-btn tp-btn--sub" onclick="_jump('owners')">Unidentified owners</button>
+  <button class="tp-btn tp-btn--sub" onclick="_jump('codes')">Unfound framework codes</button>
+
+  <div class="tp-step"><span class="tp-step-num">5</span> Import controls</div>
+  <button class="tp-btn tp-btn--sub" onclick="_jump('import')">Ready to import</button>
+
+  <div class="tp-step"><span class="tp-step-num">6</span> Map to tests &amp; documents</div>
+  <button class="tp-btn tp-btn--sub" onclick="_jump('done')">Imported / done</button>
+
   <div class="tp-hint">Each jump resets the chat and fast-forwards to the chosen step.</div>
 </div>
 
@@ -8634,4 +9059,9 @@ async function _jump(step) {
 #mapping-summary-card >.map-card-section { padding: 10px 14px 6px !important }
 #mapping-summary-card >.map-card-section { padding: 10px 14px 12px !important }
 #mr-summary span { color: rgb(140, 138, 137) !important }
+#row-colname >th:nth-child(1) { background-color: rgba(232, 232, 236, 0) !important }
+#row-colname >th:nth-child(1) { background-color: rgb(255, 255, 255) !important }
+#row-colname >th:nth-child(1) { opacity: 0 !important }
+#sptable-body >tr:nth-child(6) >[data-col-key="name"] { border-color: rgb(87, 83, 83) !important }
+#sptable-body >tr:nth-child(6) >[data-col-key="name"] { border-color: rgb(198, 198, 198) !important }
 </style>
